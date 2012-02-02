@@ -36,8 +36,8 @@ then generalizing the test for any input.
 
           property("has length equal to x.length + y.length") do
             # Generate two arrays
-            [with(:size, between(0, 25) { array },
-             with(:size, between(0, 25) { array }]
+            [with(:size, between(0..25) { array },
+             with(:size, between(0..25) { array }]
           end.check do |xs,ys|
             (xs + ys).length.should == xs.length + ys.length
             (ys + xs).length.should == xs.length + ys.length
@@ -60,8 +60,8 @@ be revealed by hand-written test cases.
 
           property("has length equal to x.length + y.length") do
             # Generate two arrays
-            [with(:size, between(0, 5)) { array },
-             with(:size, between(0, 5)) { array }]
+            [with(:size, between(0..5)) { array },
+             with(:size, between(0..5)) { array }]
           end.check do |xs,ys|
             (xs | ys).length.should == xs.length + ys.length
             (ys | xs).length.should == xs.length + ys.length
