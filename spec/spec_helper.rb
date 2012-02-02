@@ -1,5 +1,5 @@
-require File.expand_path("../../lib/stupidedi", __FILE__)
 require "rspec"
+require "propr"
 
 # Require supporting files with custom matchers and macros
 Pathname.new(File.dirname(__FILE__)).tap do |specdir|
@@ -9,7 +9,7 @@ Pathname.new(File.dirname(__FILE__)).tap do |specdir|
 end
 
 RSpec.configure do |config|
-  include QuickCheck::Macro
+  include Propr::Macro
 
   # rspec -I lib -t random spec
   # config.filter_run :random => true

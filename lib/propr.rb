@@ -194,10 +194,14 @@ class Propr
 
   # Generates a sized array by iteratively evaluating `block`
   def array(&block)
-    @bindings.push(eval("self", block.binding))
+    if block_given?
+      @bindings.push(eval("self", block.binding))
 
-    (1..size).inject([]) {|a,_| a << instance_eval(&block) }.tap do
-      @bindings.pop
+      (1..size).inject([]) {|a,_| a << instance_eval(&block) }.tap do
+        @bindings.pop
+      end
+    else
+      array { branch [:string, :integer, :float, :character, :boolean] }
     end
   end
 
