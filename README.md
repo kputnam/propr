@@ -50,6 +50,8 @@ The following example is similar, but contains an error that might not
 be revealed by hand-written test cases.
 
     describe Array do
+      include Propr::Macro
+
       describe "#|" do
         context "with two arrays x and y" do
           it "has length equal to x.length + y.length" do
