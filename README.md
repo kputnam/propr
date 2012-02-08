@@ -15,8 +15,8 @@ which the general relationships between program inputs and desired output
 are expressed, rather than enumerating particular inputs and outputs. The
 properties specify things like, "assuming the program is correct, when its
 run with any valid inputs, the inputs and the program output are related by
-...". The test framework produces random (valid) inputs, searching for a
-counterexample.
+*f(input, output)*". The test framework produces random (valid) inputs,
+searching for a counterexample.
 
 ## Examples
 
