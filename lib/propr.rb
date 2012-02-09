@@ -159,8 +159,11 @@ class Propr
     end
   end
 
-  INTMIN = 2 ** (0.size * 8 - 2) - 1
-  INTMAX = -INTMIN + 1
+  INTMAX = 2 ** (0.size * 8 - 2) - 1
+  INTMIN = -INTMAX + 1
+
+  FLOATMAX =  100000000000
+  FLOATMIN = -100000000000
 
   # Returns the given parameter
   def literal(x); x end
@@ -168,13 +171,18 @@ class Propr
   # Generates an integer
   def integer(magnitude = nil)
     case magnitude
-    when Range   then between(magnitude.end, magnitude.begin)
-    when Integer then between(magnitude, -magnitude)
+    when Range   then between(magnitude.begin, magnitude.end)
+    when Integer then between(0, magnitude)
     else              between(INTMAX, INTMIN) end
   end
 
   # Generates a float
-  alias float rand
+  def float(magnitude = nil)
+    case magnitude
+    when Range   then between(magnitude.begin, magnitude.end - 1) + rand
+    when Numeric then between(0, magnitude - 1) + rand
+    else              between(FLOATMIN, FLOATMAX) + rand
+  end
 
   # Generates a value between the given range
   def between(lo, hi = nil)
