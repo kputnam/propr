@@ -1,4 +1,26 @@
 class Propr
+
+  module Macro
+
+    def self.included(exgroup)
+      exgroup.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      def property(*args, &setup)
+        # Due to late-binding, `self` is the current RSpec example group
+        Propr.property(self, *args, &setup)
+      end
+    end
+
+  end
+
+  class << self
+    def property(exgroup, *args, &setup)
+      Propr::Property.new(exgroup, new, *args, &setup)
+    end
+  end
+
   class Property
 
     # @return [String]
@@ -8,20 +30,17 @@ class Propr
     attr_reader :propr
 
     # @return [Class]
-    attr_reader :base
+    attr_reader :exgroup
 
     # @return [Proc]
     attr_reader :setup
 
-    def initialize(base, propr, *args, &setup)
-      @base, @propr, @args, @setup =
-        base, propr, args, setup
+    def initialize(exgroup, propr, *args, &setup)
+      @exgroup, @propr, @args, @setup =
+        exgroup, propr, args, setup
     end
 
-    # @return [void]
     def check(cases = 100, limit = 10, &block)
-      property = self
-
       if @args.last.is_a?(Hash)
         args = @args.slice(0..-2)
         hash = @args.last
@@ -33,7 +52,9 @@ class Propr
         args << Hash[:random => true]
       end
 
-      @base.it(*args) do
+      property = self
+
+      @exgroup.specify(*args) do
         if property.setup.nil?
           pending
           return
