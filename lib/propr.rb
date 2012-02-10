@@ -234,6 +234,20 @@ class Propr
     acc = ""; size.times { acc << choose(chars) }; acc
   end
 
+  DATEMIN = 1721058 # 0000-01-01
+  DATEMAX = 5373484 # 9999-12-31
+
+  def date
+    Date.jd(integer(DATEMIN..DATEMAX))
+  end
+
+  TIMEMIN = 0            # 1969-12-31 00:00:00 UTC
+  TIMEMAX = 253402300799 # 9999-12-31 23:59:59 UTC
+
+  def time
+    Time.at(integer(0..TIMEMAX))
+  end
+
   # Generate a weighted value by calling the tail of each element
   #
   # @example
