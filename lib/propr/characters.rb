@@ -1,10 +1,11 @@
 class Propr
   module Characters
-    class << self
-      ASCII = (0..127).inject(""){|string, n| string << n }
-      ALL   = (0..255).inject(""){|string, n| string << n }
 
-      def of(regexp, set = ALL)
+    ASCII = (0..127).inject("", &:<<)
+    ALL   = (0..255).inject("", &:<<)
+
+    class << self
+      def of(regexp, set = Characters::ALL)
         set.scan(regexp)
       end
     end
@@ -22,7 +23,8 @@ class Propr
       :space  => Characters.of(/[[:space:]]/),
       :upper  => Characters.of(/[[:upper:]]/),
       :xdigit => Characters.of(/[[:xdigit:]]/),
-      :ascii  => (class << self; ASCII; end),
-      :any    => (class << self; ALL;   end)]
+      :ascii  => ASCII,
+      :any    => ALL]
+
   end
 end
