@@ -169,31 +169,49 @@ class Propr
   def literal(x); x end
 
   # Generates an integer
-  def integer(magnitude = nil)
-    case magnitude
-    when Range   then between(magnitude.begin, magnitude.end)
-    when Integer then between(0, magnitude)
-    else              between(INTMAX, INTMIN) end
+  def integer(range = nil)
+    case range
+    when Range
+      between(range.begin, range.end)
+    when Integer
+      between(0, range)
+    else
+      between(INTMAX, INTMIN)
+    end
   end
 
   # Generates a float
-  def float(magnitude = nil)
-    case magnitude
-    when Range   then between(magnitude.begin, magnitude.end - 1) + rand
-    when Numeric then between(0, magnitude - 1) + rand
-    else              between(FLOATMIN, FLOATMAX) + rand
+  def float(range = nil)
+    case range
+    when Range
+      between(range.begin, range.end - 1) + rand
+    when Numeric
+      between(0, range - 1) + rand
+    else
+      between(FLOATMIN, FLOATMAX) + rand
+    end
+  end
+
+  def rational
+    Rational(integer, integer(0..INTMAX))
+  end
+
+  def decimal(range = nil)
+    decimal = (BigDecimal(integer.to_s) / integer).frac
+
+    case range
+    when Range
+      between(range.begin, range.end) + decimal
+    when Numeric
+      between(0, range - 1) + decimal
+    else
+      between(INTMAX, INTMIN) + decimal
     end
   end
 
   # Generates a value between the given range
-  def between(lo, hi = nil)
-    case lo
-    when Numeric
-      rand(hi + 1 - lo) + lo
-    when Range
-      # @todo: #to_a is wasteful for large Ranges
-      lo.to_a.bind{|a| a[between(0, a.length - 1)] }
-    end
+  def between(lo, hi)
+    rand(hi + 1 - lo) + lo
   end
 
   # Generates true or false

@@ -155,11 +155,19 @@ Random float between 10 and 20
 
 #### Rational
 
-    TODO
+    >> p.rational
+    => (3419121051897208321/513829382835133827)
+
+    >> Rational(p.integer(-5000..5000), p.integer(0..10))
+    => (735/2)
 
 #### BigDecimal
 
-    TODO
+    >> p.bigdecimal.to_s("F")
+    => "7936297730318639394.320561703810327716036557741373593518621908133293211327"
+
+    >> p.bigdecimal(10..20).to_s("F")
+    => "14.934854011762374703280016489856414847259220844969789892"
 
 #### Bignum
 
@@ -167,7 +175,11 @@ Random float between 10 and 20
 
 #### Complex
 
-    TODO
+    >> Complex(p.integer(-10..10), p.integer(-10..10))
+    => (-2+1i)
+
+    >> Complex(p.float(-10..10), p.float(-10..10))
+    => (9.806161068637833+7.523520738439842i)
 
 ### Character
 
