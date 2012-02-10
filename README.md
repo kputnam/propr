@@ -174,13 +174,62 @@ Random float between 10 and 20
     >> p.character
     => "2"
 
+Create a character matching the given character class
+
+    => p.character(:alnum)
+    => "Q"
+
+    => p.character(:alpha)
+    => "E"
+
+    => p.character(:blank)
+    => "\t"
+
+    => p.character(:cntrl)
+    => "\x17"
+
+    => p.character(:digit)
+    => "2"
+
+    => p.character(:graph)
+    => "("
+
+    => p.character(:lower)
+    => "t"
+
+    => p.character(:print)
+    => "]"
+
+    => p.character(:punct)
+    => "\\"
+
+    => p.character(:space)
+    => "\r"
+
+    => p.character(:upper)
+    => "R"
+
+    => p.character(:xdigit)
+    => "1"
+
+    => p.character(:ascii)
+    => "\x12"
+
+    => p.character(:any)
+    => " "
+
 ### Date
 
-    TODO
+    => p.date
+    >> #<Date: 3388-04-30 (5917243/2,0,2299161)>
+
+    => p.date.to_s
+    >> "2925-12-15"
 
 ### Time
 
-    TODO
+    => p.time
+    >> 3099-12-23 20:00:53 -0600
 
 ### DateTime
 
@@ -202,10 +251,69 @@ Random float between 10 and 20
     >> p.with(size: 4) { p.string }
     => "b`R{"
 
+Create a string matching the given character class
+
+    >> p.string(:alnum)
+    => "dX8PzV"
+
+    >> p.string(:alpha)
+    => "yaTCXP"
+
+    >> p.string(:blank)
+    => " \t  \t\t"
+
+    >> p.string(:cntrl)
+    => "\x00\x0F\x04\x12\x1C\x02"
+
+    >> p.string(:digit)
+    => "500961"
+
+    >> p.string(:graph)
+    => "i;NAb!"
+
+    >> p.string(:lower)
+    => "llrqzi"
+
+    >> p.string(:print)
+    => ":zER**"
+
+    >> p.string(:punct)
+    => "=&{%_("
+
+    >> p.string(:space)
+    => " \f\t\n\v\r"
+
+    >> p.string(:upper)
+    => "TSLVVO"
+
+    >> p.string(:xdigit)
+    => "54fEe7"
+
+    >> p.string(:ascii)
+    => "zS9l.@"
+
+    >> p.string(:any)
+    => "\nx\xC0\xE1\xB3\x86"
+
+    >> p.string(/[A-z]/)
+    => "hQEVyV"
+
 ### Array
+
+Create an element of random values with the default size
 
     >> p.array
     => ["#", "ocvyUQ", true, "-b~M;:", 0.22744564047913196, true]
+
+Create a 4-element array of 4-character strings
+
+    >> p.with(size: 4) { p.array { p.string }}
+    => ["2n #", "UZ1d", "0vF,", "cV_{"]
+
+Create a 4-element array of 2-character strings
+
+    >> p.with(size: 4) { p.array { p.with(size: 2) { p.string }}}
+    => [":t", "u9", "K#", "_O"]
 
 ### Hash
 
