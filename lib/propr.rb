@@ -4,6 +4,8 @@
 class Propr
   autoload :Characters, "propr/characters"
   autoload :Property,   "propr/property"
+  autoload :Macro,      "propr/property"
+  autoload :Values,     "propr/values"
 
   def initialize
     @bindings = []
@@ -11,10 +13,6 @@ class Propr
 end
 
 class << Propr
-  def property(base, *args, &setup)
-    Propr::Property.new(base, new, *args, &setup)
-  end
-
   # Generate `count` values, returning nil
   def each(count, limit = 10, &block)
     new.each(count, limit, &block)
@@ -50,17 +48,7 @@ class << Propr
 end
 
 class Propr
-  module Macro
-    def self.included(base)
-      base.extend(ClassMethods)
-    end
-
-    module ClassMethods
-      def property(*args, &setup)
-        Propr.property(self, *args, &setup)
-      end
-    end
-  end
+  include Propr::Values
 
   class GuardFailure < StandardError; end
 
@@ -157,113 +145,6 @@ class Propr
     else
       parameters.each{|name, value| instance_variable_set("@_parameter_#{name}", value) }
     end
-  end
-
-  INTMAX = 2 ** (0.size * 8 - 2) - 1
-  INTMIN = -INTMAX + 1
-
-  FLOATMAX =  100000000000
-  FLOATMIN = -100000000000
-
-  # Returns the given parameter
-  def literal(x); x end
-
-  # Generates an integer
-  def integer(range = nil)
-    case range
-    when Range
-      between(range.begin, range.end)
-    when Integer
-      between(0, range)
-    else
-      between(INTMAX, INTMIN)
-    end
-  end
-
-  # Generates a float
-  def float(range = nil)
-    case range
-    when Range
-      between(range.begin, range.end - 1) + rand
-    when Numeric
-      between(0, range - 1) + rand
-    else
-      between(FLOATMIN, FLOATMAX) + rand
-    end
-  end
-
-  def rational
-    Rational(integer, integer(0..INTMAX))
-  end
-
-  def decimal(range = nil)
-    decimal = (BigDecimal(integer.to_s) / integer).frac
-
-    case range
-    when Range
-      between(range.begin, range.end) + decimal
-    when Numeric
-      between(0, range - 1) + decimal
-    else
-      between(INTMAX, INTMIN) + decimal
-    end
-  end
-
-  # Generates a value between the given range
-  def between(lo, hi)
-    rand(hi + 1 - lo) + lo
-  end
-
-  # Generates true or false
-  def boolean
-    rand(2) == 0
-  end
-
-  # Generates a sized array by iteratively evaluating `block`
-  def array(&block)
-    if block_given?
-      @bindings.push(eval("self", block.binding))
-
-      (1..size).inject([]) {|a,_| a << instance_eval(&block) }.tap do
-        @bindings.pop
-      end
-    else
-      array { branch [:string, :integer, :float, :character, :boolean] }
-    end
-  end
-
-  # Generates a character the given character class
-  def character(type = :print)
-    chars = case type
-            when Regexp then Characters.of(type)
-            when Symbol then Characters::CLASSES[type] end
-
-    raise ArgumentError, "unrecognized character type #{type.inspect}" unless chars
-    choose(chars)
-  end
-
-  # Generates a sized string of the given character class
-  def string(type = :print)
-    chars = case type
-            when Regexp then Characters.of(type)
-            when Symbol then Characters::CLASSES[type] end
-
-    raise ArgumentError, "unrecognized character type #{type.inspect}" unless chars
-    acc = ""; size.times { acc << choose(chars) }; acc
-  end
-
-  DATEMIN = 1721058 # 0000-01-01
-  DATEMAX = 5373484 # 9999-12-31
-
-  def date
-    Date.jd(integer(DATEMIN..DATEMAX))
-  end
-
-  TIMEMIN = 0            # 1969-12-31 00:00:00 UTC
-  TIMEMAX = 253402300799 # 9999-12-31 23:59:59 UTC
-
-  def time
-    Time.at(integer(0..TIMEMAX))
   end
 
   # Generate a weighted value by calling the tail of each element
