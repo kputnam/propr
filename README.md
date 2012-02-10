@@ -205,19 +205,53 @@ the same inputs for the entire test suite:
 
     TODO
 
+### Constant
+
+    >> p.literal(400)
+    => 400
+
+## Evaluation
+
+    # Randomly selects a value
+    >> p.choose(["a", "b", "x", "y"])
+    => "x"
+
+    # Call the given generator
+    >> p.call(:integer)
+    => 6375782241601633756
+
+    # Call the given generator with arguments
+    >> p.call(:integer, 0..20)
+    => 4
+
+    # Call the given generator with arguments
+    >> p.call([:integer, 0..20])
+    => 18
+
+    # Randomly choose a generate and `call` it
+    >> p.branch([:integer, :character])
+    => "H"
+
+    # Weighted branches: character 10 times more probable than integer
+    >> p.freq([1, :integer], [10, :character])
+    => "a"
+
 ## Guards
 
     # Throws Propr::GuardFailure
-    p.guard 111.even?
+    >> p.guard 111.even?
 
     # Retries, max 10 times, until guard passes
-    p.value { x = integer; guard x.even?; x }
+    >> p.value { x = integer; guard x.even?; x }
+    => 12339491166734657382
 
     # Using Object#tap
-    p.value { integer.tap{|x| guard x.even? }}
+    >> p.value { integer.tap{|x| guard x.even? }}
+    => 12277061243321644106
 
     # Retries, max 99 times, until guard passes
-    p.value(99) { integer.tap{|x| guard x.even? }}
+    >> p.value(99) { integer.tap{|x| guard x.even? }}
+    => 13232541365560615358
 
 ## Related Projects
 
