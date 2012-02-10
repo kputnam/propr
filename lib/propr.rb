@@ -182,6 +182,7 @@ class Propr
     when Range   then between(magnitude.begin, magnitude.end - 1) + rand
     when Numeric then between(0, magnitude - 1) + rand
     else              between(FLOATMIN, FLOATMAX) + rand
+    end
   end
 
   # Generates a value between the given range
@@ -249,7 +250,7 @@ class Propr
       when Symbol, String, Proc
         total += 1; [1, p]
       when Array
-        total += p.head; p
+        total += p.first; p
       end
     end
 
@@ -286,9 +287,9 @@ class Propr
     when Symbol, String
       send(generator, *args)
     when Array
-      send(generator.head, *generator.tail)
+      send(generator.first, *generator.slice(1..-1))
     when Proc
-      @bindings.push(eval("self", generate.binding))
+      @bindings.push(eval("self", generator.binding))
 
       instance_eval { generator.call(*args) }.tap do
         @bindings.pop
