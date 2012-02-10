@@ -107,6 +107,118 @@ the same inputs for the entire test suite:
       srand 317419430220052582439642446331757152805
     end
 
+
+## Generating Random Values
+
+    >> p = Propr.new
+
+### Boolean
+
+    >> p.boolean
+    => true
+
+### Numeric
+
+#### Integer
+
+    # Random integer between Propr::INTMIN and Propr::INTMAX
+    >> p.integer
+    => -1830258881470840048
+
+    # Random integer between 0 and 10
+    >> p.integer(10)
+    => 6
+
+    # Random integer between 10 and 20
+    >> p.integer(10..20)
+    => 19
+
+#### Float
+
+    # Random float between Propr::INTMIN and Propr::INTMAX
+    >> p.float
+    => 1769470177.4186616
+
+    # Random float between 0 and 10
+    >> p.float(10)
+    => 8.47034059208399
+
+    # Random float between 10 and 20
+    >> p.float(10..20)
+    => 14.58723928680602
+
+#### Rational
+
+    TODO
+
+#### BigDecimal
+
+    TODO
+
+#### Bignum
+
+    TODO
+
+#### Complex
+
+    TODO
+
+### Character
+
+    >> p.character
+    => "2"
+
+### Date
+
+    TODO
+
+### Time
+
+    TODO
+
+### DateTime
+
+    TODO
+
+### Sized-Values
+
+    >> p.size
+    => 6
+
+    >> p.with(size: 10) { p.size }
+    => 10
+
+### String
+
+    >> p.string
+    => " BW05a"
+
+    >> p.with(size: 4) { p.string }
+    => "b`R{"
+
+### Array
+
+    >> p.array
+    => ["#", "ocvyUQ", true, "-b~M;:", 0.22744564047913196, true]
+
+### Hash
+
+    TODO
+
+## Guards
+
+    # Throws Propr::GuardFailure
+    p.guard 111.even?
+
+    # Retries, max 10 times, until guard passes
+    p.value { x = integer; guard x.even?; x }
+
+    # Using Object#tap
+    p.value { integer.tap{|x| guard x.even? }}
+
+    # Retries, max 99 times, until guard passes
+    p.value(99) { integer.tap{|x| guard x.even? }}
+
 ## Related Projects
 
 * [Rantly](https://github.com/hayeah/rantly)
