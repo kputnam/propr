@@ -121,29 +121,35 @@ the same inputs for the entire test suite:
 
 #### Integer
 
-    # Random integer between Propr::INTMIN and Propr::INTMAX
+Random integer between Propr::INTMIN and Propr::INTMAX
+
     >> p.integer
     => -1830258881470840048
 
-    # Random integer between 0 and 10
+Random integer between 0 and 10
+
     >> p.integer(10)
     => 6
 
-    # Random integer between 10 and 20
+Random integer between 10 and 20
+
     >> p.integer(10..20)
     => 19
 
 #### Float
 
-    # Random float between Propr::INTMIN and Propr::INTMAX
+Random float between Propr::INTMIN and Propr::INTMAX
+
     >> p.float
     => 1769470177.4186616
 
-    # Random float between 0 and 10
+Random float between 0 and 10
+
     >> p.float(10)
     => 8.47034059208399
 
-    # Random float between 10 and 20
+Random float between 10 and 20
+
     >> p.float(10..20)
     => 14.58723928680602
 
@@ -212,44 +218,54 @@ the same inputs for the entire test suite:
 
 ## Evaluation
 
-    # Randomly selects a value
+Randomly selects a value
+
     >> p.choose(["a", "b", "x", "y"])
     => "x"
 
-    # Call the given generator
+Call the given generator
+
     >> p.call(:integer)
     => 6375782241601633756
 
-    # Call the given generator with arguments
+Call the given generator with arguments
+
     >> p.call(:integer, 0..20)
     => 4
 
-    # Call the given generator with arguments
+Call the given generator with arguments
+
     >> p.call([:integer, 0..20])
     => 18
 
-    # Randomly choose a generate and `call` it
+Randomly choose a generate and `call` it
+
     >> p.branch([:integer, :character])
     => "H"
 
-    # Weighted branches: character 10 times more probable than integer
+Weighted branches: character 10 times more probable than integer
+
     >> p.freq([1, :integer], [10, :character])
     => "a"
 
 ## Guards
 
-    # Throws Propr::GuardFailure
+Throws Propr::GuardFailure
+
     >> p.guard 111.even?
 
-    # Retries, max 10 times, until guard passes
+Retries, max 10 times, until guard passes
+
     >> p.value { x = integer; guard x.even?; x }
     => 12339491166734657382
 
-    # Using Object#tap
+Using Object#tap
+
     >> p.value { integer.tap{|x| guard x.even? }}
     => 12277061243321644106
 
-    # Retries, max 99 times, until guard passes
+Retries, max 99 times, until guard passes
+
     >> p.value(99) { integer.tap{|x| guard x.even? }}
     => 13232541365560615358
 
