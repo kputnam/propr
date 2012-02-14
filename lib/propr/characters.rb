@@ -1,14 +1,8 @@
-class Propr
-  module Characters
+module Propr
 
+  module Characters
     ASCII = (0..127).inject("", &:<<)
     ALL   = (0..255).inject("", &:<<)
-
-    class << self
-      def of(regexp, set = Characters::ALL)
-        set.scan(regexp)
-      end
-    end
 
     CLASSES = Hash[
       :alnum  => Characters.of(/[[:alnum:]]/),
@@ -25,6 +19,12 @@ class Propr
       :xdigit => Characters.of(/[[:xdigit:]]/),
       :ascii  => ASCII,
       :any    => ALL]
-
   end
+
+  class << Characters
+    def of(regexp, set = Characters::ALL)
+      set.scan(regexp)
+    end
+  end
+
 end

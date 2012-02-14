@@ -1,0 +1,16 @@
+require "spec_helper"
+
+describe Propr do
+
+  # Define a property
+  append = property{|xs, ys| xs.length + ys.length == (xs + ys).length }
+
+  # Check particular inputs
+  append.
+    check("abc", "").
+    check("", "xyz").
+    # Check randomized inputs
+    check{|p| [p.string, p.string] }.
+    check{|p| [p.array, p.array] }
+
+end

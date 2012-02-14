@@ -1,4 +1,4 @@
-class Propr
+module Propr
   module Values
 
     INTMAX = 2 ** (0.size * 8 - 2) - 1
