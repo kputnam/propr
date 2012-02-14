@@ -1,29 +1,26 @@
 module Propr
-  class Property
+  class Property < Proc
+
     # @return [String]
     attr_reader :name
 
-    # @return [Proc]
-    attr_reader :body
+    # @return [Propr::Base]
+    attr_reader :rand
 
-    def initialize(name, base, body)
-      @name, @base, @body = name, base, body
+    def initialize(name, rand, body)
+      super(&body)
+      @name, @rand = name, rand
     end
 
-    def check(*args, &setup)
-      self
+    # @return [Boolean]
+    def check(*args)
+      if block_given?
+        iterations = 0..100
+        iterations.all? { call(*yield(@rand)) }
+      else
+        call(*args)
+      end
     end
-
-    PROGRESS = %w(% $ @ # &)
-
-    def progress(completed, total)
-    end
-
-  if $stdout.tty?
-    def progress(completed, total)
-      print((completed == total) ? "" : "#{PROGRESS[completed % 4]}\010")
-    end
-  end
 
   end
 end
