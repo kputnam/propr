@@ -449,4 +449,5 @@ Retries, max 99 times, until guard passes
 ## Related Projects
 
 * [Rantly](https://github.com/hayeah/rantly)
+* [QuviQ](http://www.quviq.com/documents/QuviqFlyer.pdf)
 * [QuickCheck](http://www.haskell.org/haskellwiki/Introduction_to_QuickCheck)
