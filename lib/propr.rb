@@ -3,8 +3,6 @@ module Propr
   autoload :Property,   "propr/property"
   autoload :Random,     "propr/random"
   autoload :Base,       "propr/base"
-  autoload :RSpec,      "propr/rspec"
-  autoload :TestUnit,   "propr/testunit"
 
   class GuardFailure < StandardError
   end
@@ -27,27 +25,5 @@ module Propr
   end
 end
 
-class << Propr
-  # Generate `count` values, returning nil
-  def each(count, limit = 10, &block)
-    instance.each(count, limit, &block)
-  end
-
-  # Generate an array of `count` values
-  def map(count, limit = 10, &block)
-    instance.map(count, limit, &block)
-  end
-
-  # Generate a single value
-  def value(limit = 10,  &block)
-    instance.value(limit, &block)
-  end
-
-  def generate(count, limit, setup, &block)
-    instance.generate(count, limit, setup, &block)
-  end
-
-  def instance
-    Base.new
-  end
-end
+require "propr/rspec"
+require "propr/testunit"
