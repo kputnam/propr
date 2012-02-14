@@ -19,7 +19,7 @@ module Propr
 
     # Execute `call` on a random element from the given sequence
     def branch(generators)
-      call(choose(generators))
+      call(oneof(generators))
     end
 
     def call(generator, *args)
