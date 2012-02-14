@@ -1,17 +1,23 @@
 module Propr
   class Base
-    include Propr::Values
+    include Propr::Random
 
+    # @return [Propr::Property]
+    def property(name, &body)
+      Property.new(name, self, body)
+    end
+
+    # Throw a GuardFailure if condition is false
     def guard(condition)
       condition or raise GuardFailure
     end
 
     # Generates an element from the given sequence of values
-    def choose(values)
-      values[between(0, values.length - 1)]
+    def oneof(values)
+      values[integer(0...values.length)]
     end
 
-    # Executes `call` on a random element from the given sequence
+    # Execute `call` on a random element from the given sequence
     def branch(generators)
       call(choose(generators))
     end

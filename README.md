@@ -397,7 +397,7 @@ Create a 4-element array of 2-character strings
 
 Randomly selects a value
 
-    >> p.choose(["a", "b", "x", "y"])
+    >> p.oneof(["a", "b", "x", "y"])
     => "x"
 
 Call the given generator
@@ -415,7 +415,7 @@ Call the given generator with arguments
     >> p.call([:integer, 0..20])
     => 18
 
-Randomly choose a generate and `call` it
+Randomly choose a generator and `call` it
 
     >> p.branch([:integer, :character])
     => "H"
