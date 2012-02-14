@@ -23,56 +23,60 @@ searching for a counterexample.
 The following example demonstrates testing a property with a specific input,
 then generalizing the test for any input.
 
-    describe Array do
-      include Propr::Rspec
+```ruby
+describe Array do
+  include Propr::Rspec
 
-      describe "#+" do
-        context "with two arrays xs and ys" do
+  describe "#+" do
+    context "with two arrays xs and ys" do
 
-          # Traditional unit test
-          it "has length equal to xs.length + ys.length" do
-            xs = [100, "x", :zz]
-            ys = [:ww, 200]
-            (xs + ys).length.should == xs.length + ys.length
-          end
-
-          # Property-based test
-          property("has length equal to xs.length + ys.length") do |xs, ys|
-            (xs + ys).length == xs.length + ys.length
-          end.
-          check([100, "x", :zz], [:ww, 200]).
-          check{|rand| [rand.array, rand.array] }
-
-        end
+      # Traditional unit test
+      it "has length equal to xs.length + ys.length" do
+        xs = [100, "x", :zz]
+        ys = [:ww, 200]
+        (xs + ys).length.should == xs.length + ys.length
       end
+
+      # Property-based test
+      property("has length equal to xs.length + ys.length") do |xs, ys|
+        (xs + ys).length == xs.length + ys.length
+      end.
+      check([100, "x", :zz], [:ww, 200]).
+      check{|rand| [rand.array, rand.array] }
+
     end
+  end
+end
+```
 
 The following example is similar, but contains an error that might not
 be revealed by hand-written test cases.
 
-    describe Array do
-      include Propr::Rspec
+```ruby
+describe Array do
+  include Propr::Rspec
 
-      describe "#|" do
-        context "with two arrays xs and ys" do
+  describe "#|" do
+    context "with two arrays xs and ys" do
 
-          # Traditional unit test
-          it "has length equal to x.length + y.length" do
-            xs = [100, "x", :zz]
-            ys = [:ww, 200]
-            (xs | ys).length.should == xs.length + ys.length
-          end
-
-          # Property-based test
-          property("has length equal to xs.length + ys.length") do |xs, ys|
-            (xs | ys).length == xs.length + ys.length
-          end.
-          check([100, "x", :zz], [:ww, 200])
-          check{|rand| [rand.array, rand.array] }
-
-        end
+      # Traditional unit test
+      it "has length equal to x.length + y.length" do
+        xs = [100, "x", :zz]
+        ys = [:ww, 200]
+        (xs | ys).length.should == xs.length + ys.length
       end
+
+      # Property-based test
+      property("has length equal to xs.length + ys.length") do |xs, ys|
+        (xs | ys).length == xs.length + ys.length
+      end.
+      check([100, "x", :zz], [:ww, 200])
+      check{|rand| [rand.array, rand.array] }
+
     end
+  end
+end
+```
 
 When this specification is executed, the following error is reported.
 
@@ -130,15 +134,17 @@ arguments. The setup function is passed an instance of `Propr::Base`.
 Mixing in a module magically defines the `property` singleton method, so
 you can use it to generate test cases.
 
-    class FooTest < Test::Unit::TestCase
-      include Propr::TestUnit
+```ruby
+class FooTest < Test::Unit::TestCase
+  include Propr::TestUnit
 
-      # This defines four test cases, one per each `check`
-      property("length"){|a| a.length >= 0 }
-        check("abc").
-        check("xyz").
-        check{|rand| rand.string }.
-    end
+  # This defines four test cases, one per each `check`
+  property("length"){|a| a.length >= 0 }
+    check("abc").
+    check("xyz").
+    check{|rand| rand.string }.
+end
+```
 
 Note your property should still return `true` or `false`. You can avoid some
 clutter by *not* using `#should` or `#assert`, because the test generator
