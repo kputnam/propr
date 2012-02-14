@@ -1,9 +1,10 @@
 module Propr
   autoload :Characters, "propr/characters"
   autoload :Property,   "propr/property"
-  autoload :Values,     "propr/values"
-  autoload :Macro,      "propr/macro"
+  autoload :Random,     "propr/random"
   autoload :Base,       "propr/base"
+  autoload :RSpec,      "propr/rspec"
+  autoload :TestUnit,   "propr/testunit"
 
   class GuardFailure < StandardError
   end
@@ -48,9 +49,5 @@ class << Propr
 
   def instance
     Base.new
-  end
-
-  def property(name = "", &body)
-    Propr::Property.new(self, name, body)
   end
 end
