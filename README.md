@@ -24,24 +24,25 @@ The following example demonstrates testing a property with a specific input,
 then generalizing the test for any input.
 
     describe Array do
-      include Propr::Macro
+      include Propr::Rspec(Propr::Base)
 
       describe "#+" do
-        context "with two arrays x and y" do
-          it "has length equal to x.length + y.length" do
+        context "with two arrays xs and ys" do
+
+          # Traditional unit test
+          it "has length equal to xs.length + ys.length" do
             xs = [100, "x", :zz]
             ys = [:ww, 200]
-            xs.concat(ys).length.should == xs.length + ys.length
+            (xs + ys).length.should == xs.length + ys.length
           end
 
-          property("has length equal to x.length + y.length") do
-            # Generate two arrays
-            [with(:size, between(0..25) { array },
-             with(:size, between(0..25) { array }]
-          end.check do |xs,ys|
-            (xs + ys).length.should == xs.length + ys.length
-            (ys + xs).length.should == xs.length + ys.length
-          end
+          # Property-based test
+          property("has length equal to xs.length + ys.length") do |xs, ys|
+            (xs + ys).length == xs.length + ys.length
+          end.
+          check([100, "x", :zz], [:ww, 200]).
+          check{|rand| [rand.array, rand.array] }
+
         end
       end
     end
@@ -50,24 +51,25 @@ The following example is similar, but contains an error that might not
 be revealed by hand-written test cases.
 
     describe Array do
-      include Propr::Macro
+      include Propr::Rspec(Propr::Base)
 
       describe "#|" do
-        context "with two arrays x and y" do
+        context "with two arrays xs and ys" do
+
+          # Traditional unit test
           it "has length equal to x.length + y.length" do
             xs = [100, "x", :zz]
             ys = [:ww, 200]
             (xs | ys).length.should == xs.length + ys.length
           end
 
-          property("has length equal to x.length + y.length") do
-            # Generate two arrays
-            [with(:size, between(0..5)) { array },
-             with(:size, between(0..5)) { array }]
-          end.check do |xs,ys|
-            (xs | ys).length.should == xs.length + ys.length
-            (ys | xs).length.should == xs.length + ys.length
-          end
+          # Property-based test
+          property("has length equal to xs.length + ys.length") do |xs, ys|
+            (xs | ys).length == xs.length + ys.length
+          end.
+          check([100, "x", :zz], [:ww, 200])
+          check{|rand| [rand.array, rand.array] }
+
         end
       end
     end
@@ -80,26 +82,23 @@ When this specification is executed, the following error is reported.
     Failures:
 
       1) Array#| with two arrays x and y has length equal to x.length + y.length
-         Failure/Error: instance_exec(*input, &block)
+         Failure/Error:
          expected: 4,
-              got: 3 (using ==) -- with srand 317419430220052582439642446331757152805 after 25 successes, input: [[false, "`~~", false], [-187294205]]
-         # spec/examples/failure.example:17:in `block (4 levels) in <main>'
-         # ./lib/propr/property.rb:76:in `instance_exec'
-         # ./lib/propr/property.rb:76:in `block (2 levels) in check'
-         # ./lib/propr.rb:119:in `generate'
-         # ./lib/propr/property.rb:74:in `block in check'
+              got: 3 (using ==)
+         after 25 successes
+         with [[false, "`~~", false], [-187294205]]
+         with srand 317419430220052582439642446331757152805
 
     Finished in 0.02185 seconds
     2 examples, 1 failure
 
 You may have figured out the error is that `|` removes duplicate elements
-from the result, but if that `|` was buried elsewhere in our application,
-we probably wouldn't have caught it by writing individual test cases. The
-output indicates Propr generated 25 sets of input before finding one that
-failed.
+from the result. We might not have caught the mistake by writing individual
+test cases. The output indicates Propr generated 25 sets of input before
+finding one that failed.
 
-Now that a failing test case has been identified, you might write a one-off
-test case with those specific inputs to prevent regressions. You could also
+Now that a failing test case has been identified, you might write another
+`check` with those specific inputs to prevent regressions. You could also
 call `srand 317419430220052582439642446331757152805` like this to regenerate
 the same inputs for the entire test suite:
 
@@ -107,10 +106,62 @@ the same inputs for the entire test suite:
       srand 317419430220052582439642446331757152805
     end
 
+## Just Plain Functions
+
+Properties are basically just functions, they should return `true` or `false`.
+
+    p = Propr::Base.property("name"){|a,b| a + b == b + a }
+    p.class.ancestors #=> [Propr::Property, Proc, Object, ...]
+
+You can invoke a property using `#check`. Like any Proc, you can also invoke
+them using `#call` or `#[]`.
+
+    p.check(3, 4)     #=> true
+    p.check("x", "y") #=> true
+
+But you can also invoke them with a setup function that generates random
+arguments. The setup function is passed an instance of `Propr::Base`.
+
+    p.check{|rand| [rand.integer, rand.float] } #=> true
+    p.check{|rand| [rand.array, rand.array] }   #=> true
+
+## Using Propr + Test Frameworks
+
+Mixing in a module magically defines the `property` singleton method, so
+you can use it to generate test cases.
+
+    class FooTest < Test::Unit::TestCase
+      include Propr::TestUnit
+
+      # This defines four test cases, one per each `check`
+      property("length"){|a| a.length >= 0 }
+        check("abc").
+        check("xyz").
+        check{|rand| rand.string }.
+    end
+
+Note your property should still return `true` or `false`. You can avoid some
+clutter by *not* using `#should` or `#assert`, because the test generator
+will generate the assertion for you.
+
+By default, `rand` will be an instance of `Propr::Base`. If you want to use
+some other generator you can pass a parameter on the `include` line like so:
+
+    class FooTest < Test::Unit::TestCase
+      include Propr::TestUnit(RandomFoos)
+    end
+
+This is just a convenience, though. You can call `Propr::Rspec.define` or
+`Propr::TestUnit.define` to generate test cases, too.
+
+    Propr::TestUnit.define(Propr::Base.property("length"){|a| a.length >= 0 }).
+      check("abc").
+      check("xyz").
+      check{|rand| rand.string }
 
 ## Generating Random Values
 
-    >> p = Propr.new
+    >> p = Propr::Base.new
 
 ### Boolean
 
