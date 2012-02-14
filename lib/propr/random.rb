@@ -1,3 +1,8 @@
+# require "date"
+# require "complex"
+# require "rational"
+# require "bigdecimal"
+
 module Propr
   module Random
 
@@ -9,15 +14,15 @@ module Propr
     def value
       branch [:date,
               :time,
-              :hash,
-              :array,
+             #:hash,
+             #:array,
               :float,
               :string,
-              :complex,
-              :decimal,
+             #:complex,
+             #:decimal,
               :integer,
               :boolean,
-              :rational,
+             #:rational,
               :character]
     end
 
@@ -55,7 +60,7 @@ module Propr
       when Numeric
         integer(0..range - 1)
       else
-        between(FLOATMIN..FLOATMAX)
+        integer(FLOATMIN..FLOATMAX)
       end + rand
     end
 
@@ -81,11 +86,11 @@ module Propr
 
       case range
       when Range
-        between(range.first, range.last)
+        integer(range.first, range.last)
       when Numeric
-        between(0, range - 1)
+        integer(0, range - 1)
       else
-        between(INTMAX, INTMIN)
+        integer(INTMAX, INTMIN)
       end + frac
     end
 
@@ -153,7 +158,7 @@ module Propr
               end or raise ArgumentError,
                 "unrecognized character type #{type.inspect}"
 
-      choose(chars)
+      oneof(chars)
     end
 
     # Generates a sized array by iteratively evaluating `block`
@@ -161,7 +166,7 @@ module Propr
     # @return [Array]
     def array(&block)
       if block_given?
-        [].tap{|a| size.times { a << yield }}
+        [].tap{|a| 10.times { a << yield }}
       else
         array { value }
       end
@@ -184,7 +189,7 @@ module Propr
               end or raise ArgumentError,
                 "unrecognized character type #{type.inspect}"
 
-      "".tap{|s| size.times { s << choose(chars) }}
+      "".tap{|s| 10.times { s << oneof(chars) }}
     end
 
   end
