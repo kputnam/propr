@@ -90,7 +90,7 @@ When this specification is executed, the following error is reported.
          expected: 4,
               got: 3 (using ==)
          after 25 successes
-         with [[false, "`~~", false], [-187294205]]
+         with [[false, "!~w", false], [-187294205]]
          with srand 317419430220052582439642446331757152805
 
     Finished in 0.02185 seconds
