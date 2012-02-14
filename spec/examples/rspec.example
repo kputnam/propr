@@ -1,0 +1,10 @@
+require "spec_helper"
+
+describe Propr do
+  include Propr::RSpec(Propr::Base.new)
+
+  property("associativity"){|x, y| x + y == y + x }.
+    check(1, 1).
+    check(2, 2).
+    check{|p| [p.integer, p.integer] }
+end
