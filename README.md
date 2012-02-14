@@ -24,7 +24,7 @@ The following example demonstrates testing a property with a specific input,
 then generalizing the test for any input.
 
     describe Array do
-      include Propr::Rspec(Propr::Base)
+      include Propr::Rspec
 
       describe "#+" do
         context "with two arrays xs and ys" do
@@ -51,7 +51,7 @@ The following example is similar, but contains an error that might not
 be revealed by hand-written test cases.
 
     describe Array do
-      include Propr::Rspec(Propr::Base)
+      include Propr::Rspec
 
       describe "#|" do
         context "with two arrays xs and ys" do
