@@ -1,5 +1,5 @@
 module Propr
-  class Property < Proc
+  class Property #< Proc
 
     # @return [String]
     attr_reader :name
@@ -8,8 +8,7 @@ module Propr
     attr_reader :rand
 
     def initialize(name, rand, body)
-      super(&body)
-      @name, @rand = name, rand
+      @name, @rand, @body = name, rand, body
     end
 
     # @return [Boolean]
@@ -20,6 +19,18 @@ module Propr
       else
         call(*args)
       end
+    end
+
+    def arity
+      @body.arity
+    end
+
+    def call(*args, &block)
+      @body.call(*args, &block)
+    end
+
+    def [](*args, &block)
+      @body[*args, &block]
     end
 
   end
