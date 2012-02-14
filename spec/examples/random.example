@@ -1,10 +1,11 @@
 require "spec_helper"
 
 describe Propr do
+  include Propr::RSpec(Propr::Base.new)
 
   # Define a property
-  append = property{|xs, ys| xs.length + ys.length == (xs + ys).length }
-
+  append = property("append") {|xs, ys| xs.length + ys.length == (xs + ys).length }
+ 
   # Check particular inputs
   append.
     check("abc", "").
