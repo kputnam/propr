@@ -4,7 +4,7 @@ module Propr
     # @return [String]
     attr_reader :name
 
-    # @return [Propr::Base]
+    # @return [Propr::Random]
     attr_reader :rand
 
     def initialize(name, rand, body)
