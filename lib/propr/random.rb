@@ -76,6 +76,8 @@ module Propr
     # @return [Complex]
     def complex
       Complex(float, float)
+      Complex(decimal, decimal)
+      Complex(rational, rational)
     end
 
     # Generates a decimal value
@@ -86,11 +88,11 @@ module Propr
 
       case range
       when Range
-        integer(range.first, range.last)
+        integer(range.first..range.last)
       when Numeric
-        integer(0, range - 1)
+        integer(0..range - 1)
       else
-        integer(INTMAX, INTMIN)
+        integer(INTMAX..INTMIN)
       end + frac
     end
 
