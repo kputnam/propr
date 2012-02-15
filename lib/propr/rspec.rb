@@ -1,44 +1,37 @@
 module Propr
-  def self.RSpec(rand)
-    Module.new.tap do |m|
-      m.send(:define_method, :property) { raise }
-      m.send(:define_singleton_method, :rand) { rand }
-      m.send(:define_singleton_method, :included) do |scope|
-        scope.send(:define_singleton_method, :property) do |name, &body|
-          RSpecProperty.new(self, name, rand, body)
-        end
-      end
-    end
-  end
 
   class RSpecProperty < Property
-    def initialize(group, name, rand, body)
+    def initialize(group, name, options, rand, body)
       super(name, rand, body)
-      @group = group
+
+      @options, @group =
+        options, group
     end
 
-    def check(*args)
-      # Restore access to lexical scope, despite RSpec
+    def check(*input, &block)
       property = self
 
       if block_given?
-        @group.it(@name) do
+        @group.example(@name, @options.merge(location(block))) do
           begin
-            args       = nil
-            iterations = 0..100
-            iterations.all? { property.call(*(args = yield(property.rand))).should be_true }
+            100.times do |n|
+              input = yield(property.rand)
+              property.call(*input) \
+               or property.error("Falsifiable after #{n} tests")
+            end
           rescue => e
-            e.message << "\n    with: #{args.inspect}"
+            e.message << "\n    with: #{input.inspect}"
             e.message << "\n    seed: #{srand}"
             raise e
           end
         end
       else
-        @group.it(@name) do
+        @group.example(@name, @options.merge(location(caller))) do
           begin
-            property.call(*args).should be_true
+            property.call(*input) \
+              or property.error("Falsifiable")
           rescue => e
-            e.message << "\n    with: #{args.inspect}"
+            e.message << "\n    with: #{input.inspect}"
             e.message << "\n    seed: #{srand}"
             raise e
           end
@@ -47,9 +40,35 @@ module Propr
 
       self
     end
+
+    def error(message)
+      raise ::RSpec::Expectations::ExpectationNotMetError,
+        message, [@body.source_location.join(":") + ":0"]
+    end
+
+    def location(data)
+      case data
+      when Proc
+        Hash[caller: ["#{data.source_location.join(":")}:0"]]
+      when Array
+        Hash[caller: [data.first]]
+      end
+    end
+  end
+
+  def self.RSpec(rand)
+    Module.new.tap do |m|
+      m.send(:define_method, :property) { raise }
+      m.send(:define_singleton_method, :rand) { rand }
+      m.send(:define_singleton_method, :included) do |scope|
+        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
+          RSpecProperty.new(self, name, options, rand, body)
+        end
+      end
+    end
   end
 
   # Constants and methods live in separate namespaces, so this
   # is one way to memoize the method with a default arg (Base).
-  # RSpec = RSpec(Base)
+  RSpec = RSpec(Base)
 end

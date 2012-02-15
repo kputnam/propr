@@ -3,8 +3,29 @@ require "spec_helper"
 describe Propr do
   include Propr::RSpec(Propr::Base.new)
 
-  property("associativity"){|x, y| x + y == y + x }.
-    check(1, 1).
-    check(2, 2).
-    check{|p| [p.integer, p.integer] }
+  property("symmetric"){|x, y| x + y == y + x }
+    .check(1, 1)
+    .check(2, 2)
+    .check{|p| [p.integer, p.integer] }
+
+  property("associative"){|x,y,z| x + (y - z) == (x + y) + z }
+    .check(1, 1, 1)
+    .check(2, 2, 2)
+    .check{|p| [p.integer, p.integer, p.integer] }
+
+  property("reflexive"){|x| x <= x }
+    .check(10)
+    .check(20)
+    .check{|p| p.string }
+
+  # describe "scope" do
+  #   let(:x) { 100 }
+  #   let(:y) { 200 }
+  #
+  #   # @todo: RSpec users might expect `x` and `y` to be
+  #   # in scope in the property and/or the input generator
+  #   property("scope", :pending => true){|m,n| m == x and n == y }
+  #     .check{ [x, y] }
+  # end
+
 end

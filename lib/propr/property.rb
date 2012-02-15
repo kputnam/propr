@@ -8,16 +8,17 @@ module Propr
     attr_reader :rand
 
     def initialize(name, rand, body)
-      @name, @rand, @body = name, rand, body
+      @name, @rand, @body =
+        name, rand, body || lambda {|*_| raise "default property" }
     end
 
     # @return [Boolean]
     def check(*args)
       if block_given?
         iterations = 0..100
-        iterations.all? { call(*yield(@rand)) }
+        iterations.all? { @body.call(*yield(@rand)) }
       else
-        call(*args)
+        @body.call(*args)
       end
     end
 
