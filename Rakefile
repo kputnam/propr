@@ -11,7 +11,7 @@ rescue LoadError
 end
 
 task :console do
-  exec *%w(irb -I lib -r markup)
+  exec *%w(irb -I lib -r propr)
 end
 
 begin
