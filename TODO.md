@@ -9,6 +9,15 @@ Priorities
 6. Publish as rubygem
 7. Update Stupidedi
 
-Details
+Specifics
 
-* Implement #map to generate random keys and values
+* Implement #hash to generate random keys and values
+* Steal `collect` and `classify` from QuickCheck
+
+    property("foo") { ... }
+      .check{|rand| rand.integer.tap{|n| classify(n < 0, "negative") }
+                                .tap{|n| classify(n > 0, "positive") }}
+
+    property("bar") { ... }
+      check{|rand| rand.array.tap{|xs| collect xs.length }}
+
