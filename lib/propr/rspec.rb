@@ -60,19 +60,7 @@ module Propr
     end
   end
 
-  def self.RSpec(rand)
-    Module.new.tap do |m|
-      m.send(:define_method, :property) { raise }
-      m.send(:define_singleton_method, :rand) { rand }
-      m.send(:define_singleton_method, :included) do |scope|
-        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, rand, body)
-        end
-      end
-    end
-  end
-
   # Constants and methods live in separate namespaces, so this
-  # is one way to memoize the method with a default arg (Base).
-  RSpec = RSpec(Base.new)
+  # is one way to memoize the method with a default arg (Random).
+  RSpec = RSpec(Random.new)
 end

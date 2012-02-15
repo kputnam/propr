@@ -1,8 +1,11 @@
 module Propr
-  autoload :Characters, "propr/characters"
-  autoload :Property,   "propr/property"
-  autoload :Random,     "propr/random"
-  autoload :Base,       "propr/base"
+  autoload :Characters,     "propr/characters"
+  autoload :Property,       "propr/property"
+  autoload :Random,         "propr/random"
+  autoload :Base,           "propr/base"
+  autoload :RSpec,          "propr/rspec"
+  autoload :RSpecProperty,  "propr/rspec"
+  autoload :TestUnit,       "propr/testunit"
 
   class GuardFailure < StandardError
   end
@@ -23,7 +26,16 @@ module Propr
       "Exceeded limit #{limit}: #{tries} failed guards"
     end
   end
-end
 
-require "propr/rspec"
-require "propr/testunit"
+  def self.RSpec(rand)
+    Module.new.tap do |m|
+      m.send(:define_method, :property) { raise }
+      m.send(:define_singleton_method, :rand) { rand }
+      m.send(:define_singleton_method, :included) do |scope|
+        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
+          RSpecProperty.new(self, name, options, rand, body)
+        end
+      end
+    end
+  end
+end
