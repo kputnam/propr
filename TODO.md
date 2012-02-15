@@ -11,7 +11,9 @@ Priorities
 
 Specifics
 
-* Implement #hash to generate random keys and values
+* Re-implement guards
+* Re-consider sized values (magntitude,center) or range?
+* Re-implement sized values (array, string, hash)
 * Steal `collect` and `classify` from QuickCheck
 
     property("foo") { ... }
@@ -21,3 +23,5 @@ Specifics
     property("bar") { ... }
       check{|rand| rand.array.tap{|xs| collect xs.length }}
 
+* Shrink input with alt. algorithms: hill climbing, breadth first
+* See also: smallcheck, deepcheck
