@@ -4,14 +4,24 @@ describe Propr do
   include Propr::RSpec(Propr::Base.new)
 
   # Define a property
-  append = property("append") {|xs, ys| xs.length + ys.length == (xs + ys).length }
+  p = property("append") {|xs, ys| xs.length + ys.length == (xs + ys).length }
  
   # Check particular inputs
-  append.
-    check("abc", "").
-    check("", "xyz").
-    # Check randomized inputs
-    check{|p| [p.string, p.string] }.
-    check{|p| [p.array, p.array] }
+  p.check("abc", "")
+  p.check("", "xyz")
+
+  # Check randomized inputs
+  p.check{|p| [p.string, p.string] }
+  p.check{|p| [p.array, p.array] }
+
+  p = property("associative") {|x, y, z| x - (y - z) == (x - y) - z }
+  p.check(0, 0, 0)
+  p.check(0, 0, 1)
+  p.check(0, 1, 0)
+  p.check(0, 1, 1)
+  p.check(1, 0, 0)
+  p.check(1, 0, 1)
+  p.check(1, 1, 0)
+  p.check(1, 1, 1)
 
 end

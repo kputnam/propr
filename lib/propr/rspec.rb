@@ -9,15 +9,17 @@ module Propr
     end
 
     def check(*input, &block)
+      # This is to get RSpec to report meaningful line numbers
       property = self
+      location = location(block || caller)
 
       if block_given?
-        @group.example(@name, @options.merge(location(block))) do
+        @group.example(@name, @options.merge(caller: location)) do
           begin
             100.times do |n|
               input = yield(property.rand)
               property.call(*input) \
-               or property.error("Falsifiable after #{n} tests")
+                or property.error("Falsifiable after #{n} tests", location)
             end
           rescue => e
             e.message << "\n    with: #{input.inspect}"
@@ -26,10 +28,10 @@ module Propr
           end
         end
       else
-        @group.example(@name, @options.merge(location(caller))) do
+        @group.example(@name, @options.merge(caller: location)) do
           begin
             property.call(*input) \
-              or property.error("Falsifiable")
+              or property.error("Falsifiable", location)
           rescue => e
             e.message << "\n    with: #{input.inspect}"
             e.message << "\n    seed: #{srand}"
@@ -41,17 +43,17 @@ module Propr
       self
     end
 
-    def error(message)
+    def error(message, location)
       raise ::RSpec::Expectations::ExpectationNotMetError,
-        message, [@body.source_location.join(":") + ":0"]
+        message, location
     end
 
     def location(data)
       case data
       when Proc
-        Hash[caller: ["#{data.source_location.join(":")}:0"]]
+        ["#{data.source_location.join(":")}:0"]
       when Array
-        Hash[caller: [data.first]]
+        [data.first]
       end
     end
   end

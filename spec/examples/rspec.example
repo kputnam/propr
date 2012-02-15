@@ -8,7 +8,7 @@ describe Propr do
     .check(2, 2)
     .check{|p| [p.integer, p.integer] }
 
-  property("associative"){|x,y,z| x + (y - z) == (x + y) + z }
+  property("associative"){|x,y,z| x + (y + z) == (x + y) + z }
     .check(1, 1, 1)
     .check(2, 2, 2)
     .check{|p| [p.integer, p.integer, p.integer] }
