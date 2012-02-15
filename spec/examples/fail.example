@@ -1,0 +1,28 @@
+require "spec_helper"
+require "complex"
+require "rational"
+require "bigdecimal"
+
+describe Numeric do
+  include Propr::RSpec
+
+  describe "+" do
+    property("associative"){|x,y,z| x + (y + z) == (x + y) + z }
+      .check{|rand| [rand.integer, rand.integer, rand.integer] }
+      .check{|rand| [rand.float, rand.float, rand.float] }
+      .check{|rand| [rand.string, rand.string, rand.string] }
+      .check{|rand| [rand.decimal, rand.decimal, rand.decimal] }
+      .check{|rand| [rand.complex, rand.complex, rand.complex] }
+      .check{|rand| [rand.rational, rand.rational, rand.rational] }
+  end
+
+  describe "*" do
+    property("associative"){|x,y,z| x * (y * z) == (x * y) * z }
+      .check{|rand| [rand.integer, rand.integer, rand.integer] }
+      .check{|rand| [rand.float, rand.float, rand.float] }
+      .check{|rand| [rand.decimal, rand.decimal, rand.decimal] }
+      .check{|rand| [rand.complex, rand.complex, rand.complex] }
+      .check{|rand| [rand.rational, rand.rational, rand.rational] }
+  end
+
+end
