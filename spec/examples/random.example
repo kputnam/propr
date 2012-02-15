@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Propr do
-  include Propr::RSpec(Propr::Base.new)
+  include Propr::RSpec
 
   # Define a property
   p = property("append") {|xs, ys| xs.length + ys.length == (xs + ys).length }
@@ -11,17 +11,7 @@ describe Propr do
   p.check("", "xyz")
 
   # Check randomized inputs
-  p.check{|p| [p.string, p.string] }
-  p.check{|p| [p.array, p.array] }
-
-  p = property("associative") {|x, y, z| x - (y - z) == (x - y) - z }
-  p.check(0, 0, 0)
-  p.check(0, 0, 1)
-  p.check(0, 1, 0)
-  p.check(0, 1, 1)
-  p.check(1, 0, 0)
-  p.check(1, 0, 1)
-  p.check(1, 1, 0)
-  p.check(1, 1, 1)
+  p.check{|rand| [rand.string, rand.string] }
+  p.check{|rand| [rand.array, rand.array] }
 
 end

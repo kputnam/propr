@@ -28,23 +28,17 @@ describe Array do
   include Propr::Rspec
 
   describe "#+" do
-    context "with two arrays xs and ys" do
-
-      # Traditional unit test
-      it "has length equal to xs.length + ys.length" do
-        xs = [100, "x", :zz]
-        ys = [:ww, 200]
-        (xs + ys).length.should == xs.length + ys.length
-      end
-
-      # Property-based test
-      property("has length equal to xs.length + ys.length") do |xs, ys|
-        (xs + ys).length == xs.length + ys.length
-      end.
-      check([100, "x", :zz], [:ww, 200]).
-      check{|rand| [rand.array, rand.array] }
-
+    # Traditional unit test
+    it "sums lengths" do
+      xs = [100, "x", :zz]
+      ys = [:ww, 200]
+      (xs + ys).length.should == xs.length + ys.length
     end
+
+    # Property-based test
+    property("sums lengths"){|xs, ys| (xs + ys).length == xs.length + ys.length }
+      .check([100, "x", :zz], [:ww, 200])
+      .check{|rand| [rand.array, rand.array] }
   end
 end
 ```
@@ -57,23 +51,17 @@ describe Array do
   include Propr::Rspec
 
   describe "#|" do
-    context "with two arrays xs and ys" do
-
-      # Traditional unit test
-      it "has length equal to x.length + y.length" do
-        xs = [100, "x", :zz]
-        ys = [:ww, 200]
-        (xs | ys).length.should == xs.length + ys.length
-      end
-
-      # Property-based test
-      property("has length equal to xs.length + ys.length") do |xs, ys|
-        (xs | ys).length == xs.length + ys.length
-      end.
-      check([100, "x", :zz], [:ww, 200])
-      check{|rand| [rand.array, rand.array] }
-
+    # Traditional unit test
+    it "sums lengths" do
+      xs = [100, "x", :zz]
+      ys = [:ww, 200]
+      (xs | ys).length.should == xs.length + ys.length
     end
+
+    # Property-based test
+    property("sums lengths"){|xs, ys| (xs | ys).length == xs.length + ys.length }
+      .check([100, "x", :zz], [:ww, 200])
+      .check{|rand| [rand.array, rand.array] }
   end
 end
 ```
@@ -115,10 +103,9 @@ the same inputs for the entire test suite:
 Properties are basically just functions, they should return `true` or `false`.
 
     p = Propr::Base.property("name"){|a,b| a + b == b + a }
-    p.class.ancestors #=> [Propr::Property, Proc, Object, ...]
 
-You can invoke a property using `#check`. Like any Proc, you can also invoke
-them using `#call` or `#[]`.
+You can invoke a property using `#check`. Like lambdas and procs, you can also
+invoke them using `#call` or `#[]`.
 
     p.check(3, 4)     #=> true
     p.check("x", "y") #=> true
@@ -128,6 +115,10 @@ arguments. The setup function is passed an instance of `Propr::Base`.
 
     p.check{|rand| [rand.integer, rand.float] } #=> true
     p.check{|rand| [rand.array, rand.array] }   #=> true
+
+When invoked with a block, `check` will run `p` with 100 random inputs by
+default, but you can also pass an argument to `check` indicating how many
+times `p` should be run.
 
 ## Using Propr + Test Frameworks
 
@@ -154,7 +145,7 @@ By default, `rand` will be an instance of `Propr::Base`. If you want to use
 some other generator you can pass a parameter on the `include` line like so:
 
     class FooTest < Test::Unit::TestCase
-      include Propr::TestUnit(RandomFoos)
+      include Propr::TestUnit(RandomFoos.new)
     end
 
 This is just a convenience, though. You can call `Propr::Rspec.define` or

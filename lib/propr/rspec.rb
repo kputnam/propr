@@ -9,7 +9,7 @@ module Propr
     end
 
     def check(*input, &block)
-      # This is to get RSpec to report meaningful line numbers
+      # This is to work around RSpec's magic dynamic scoping
       property = self
       location = location(block || caller)
 
@@ -48,6 +48,8 @@ module Propr
         message, location
     end
 
+  private
+
     def location(data)
       case data
       when Proc
@@ -72,5 +74,5 @@ module Propr
 
   # Constants and methods live in separate namespaces, so this
   # is one way to memoize the method with a default arg (Base).
-  RSpec = RSpec(Base)
+  RSpec = RSpec(Base.new)
 end

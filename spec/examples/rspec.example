@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Propr do
-  include Propr::RSpec(Propr::Base.new)
+  include Propr::RSpec
 
   property("symmetric"){|x, y| x + y == y + x }
     .check(1, 1)
