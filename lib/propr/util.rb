@@ -38,12 +38,41 @@ module Propr
 
   None = None.new
 
-  def self.unfold(seed, &block)
+end
+
+# @note: Beware of monkey patches below!
+
+class TrueClass
+  def maybe(value)
+    Propr::Some.new(value)
+  end
+end
+
+class FalseClass
+  def maybe(value)
+    Propr::None
+  end
+end
+
+class << Array
+  # @return [Array]
+  def unfold(seed, &block)
     m = yield(seed)
     m.fold([]){|(item, seed)| [item] + unfold(seed, &block) }
   end
+end
 
-  def self.maybe(bool, value)
-    bool ? Some.new(value) : None
+class << Enumerator
+  # @return [Enumerator]
+  def unfold(seed, &block)
+    Enumerator.new do |yielder|
+      while true
+        yield(seed).fold(false) do |(item,seed_)|
+          yielder.yield item
+          seed = seed_
+          true
+        end || break
+      end
+    end
   end
 end

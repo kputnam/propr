@@ -11,11 +11,11 @@ class << Integer
 end
 
 class Integer
-  # @return [Array<Integer>]
+  # @return [Enumerator<Integer>]
   def propq
-    Propr.unfold(self) do |seed|
+    Enumerator.unfold(self) do |seed|
       seed_ = seed / 2
-      Propr.maybe(seed != seed_, [self - seed, seed_])
+      (seed != seed_).maybe([self - seed, seed_])
     end
   end
 end
