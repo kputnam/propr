@@ -7,6 +7,9 @@ module Propr
   autoload :RSpecProperty,  "propr/rspec"
   autoload :TestUnit,       "propr/testunit"
 
+  require "propr/util"
+  require "propr/types"
+
   class GuardFailure < StandardError
   end
 
