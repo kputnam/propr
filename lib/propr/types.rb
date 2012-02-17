@@ -12,3 +12,7 @@ require "propr/types/set"
 require "propr/types/string"
 require "propr/types/symbol"
 require "propr/types/time"
+
+# Type#propo: choose an element at random from this collection
+# Type#propq: simplify this value
+# Type.propr: generate a random value
