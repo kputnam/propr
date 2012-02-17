@@ -3,21 +3,21 @@ require "spec_helper"
 describe Range, "generating" do
 
   context "min" do
-    property("include?"){|a| Range.propr(min: a).first >= a }
+    property("bounded"){|n| Range.propr(min: n).first >= n }
       .check{|s| Integer.propr }
   end
 
   context "max" do
-    property("include?"){|b| Range.propr(max: b).last <= b }
+    property("bounded"){|n| Range.propr(max: n).last <= n }
       .check{|s| Integer.propr }
   end
 
   context "min and max" do
-    property("include?"){|a,b| Range.propr(min: a, max: b).first >= a }
-      .check{|s| [Integer.propr, Integer.propr] }
+    property("bounded"){|a,b| Range.propr(min: a, max: b).first >= a }
+      .check{|s| s.guard([Integer.propr, Integer.propr], &:<=) }
 
-    property("include?"){|a,b| Range.propr(min: a, max: b).last <= b }
-      .check{|s| [Integer.propr, Integer.propr] }
+    property("bounded"){|a,b| Range.propr(min: a, max: b).last <= b }
+      .check{|s| s.guard([Integer.propr, Integer.propr], &:<=) }
   end
 
   context "inclusive?" do
@@ -29,6 +29,15 @@ describe Range, "generating" do
   end
 
   context "block" do
+    specify "called twice" do
+      count = 0
+      range = Range.propr(inclusive?: true) { count += 1 }
+      range.should == (1..2)
+    end
+  end
+
+  specify "args required" do
+    lambda { Range.propr }.should raise_error
   end
 
 end

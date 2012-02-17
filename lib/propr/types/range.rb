@@ -20,7 +20,7 @@ class << Range
          (min or max).class.propr(min: min, max: max)]
       end
 
-    if options[:inclusive?] or rand > 0.5
+    if options.fetch(:inclusive?, rand > 0.5)
       a..b
     else
       a...b
