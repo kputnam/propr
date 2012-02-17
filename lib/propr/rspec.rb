@@ -29,7 +29,7 @@ module Propr
             retry if (retries -= 1) > 0
             e = e.class.new "(no message)" if e.message.frozen?
             e.message << "\n    after #{100 - remaining} passed"
-            e.message << "\n    with: #{input.inspect}"
+            e.message << "\n    with: #{property.withfmt(input)}"
             e.message << "\n    seed: #{srand}"
             raise e
           end
@@ -42,7 +42,7 @@ module Propr
           rescue => e
             retry if (retries -= 1) > 0
             e = e.class.new "(no message)" if e.message.frozen?
-            e.message << "\n    with: #{input.inspect}"
+            e.message << "\n    with: #{property.withfmt(input)}"
             e.message << "\n    seed: #{srand}"
             raise e
           end
@@ -55,6 +55,14 @@ module Propr
     def error(message, location)
       raise ::RSpec::Expectations::ExpectationNotMetError,
         message, location
+    end
+
+    def withfmt(input)
+      if @body.arity == 1
+        input.inspect
+      else
+        input.map(&:inspect).join(", ")
+      end
     end
 
   private
