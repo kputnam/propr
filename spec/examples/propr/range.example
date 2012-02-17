@@ -1,0 +1,34 @@
+require "spec_helper"
+
+describe Range, "generating" do
+
+  context "min" do
+    property("include?"){|a| Range.propr(min: a).first >= a }
+      .check{|s| Integer.propr }
+  end
+
+  context "max" do
+    property("include?"){|b| Range.propr(max: b).last <= b }
+      .check{|s| Integer.propr }
+  end
+
+  context "min and max" do
+    property("include?"){|a,b| Range.propr(min: a, max: b).first >= a }
+      .check{|s| [Integer.propr, Integer.propr] }
+
+    property("include?"){|a,b| Range.propr(min: a, max: b).last <= b }
+      .check{|s| [Integer.propr, Integer.propr] }
+  end
+
+  context "inclusive?" do
+    property("true"){|r| not r.exclude_end? }
+      .check{|s| Range.propr(inclusive?: true, min: -5, max: 5) }
+
+    property("false"){|r| r.exclude_end? }
+      .check{|s| Range.propr(inclusive?: false, min: -5, max: 5) }
+  end
+
+  context "block" do
+  end
+
+end

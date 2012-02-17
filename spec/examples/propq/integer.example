@@ -1,0 +1,28 @@
+require "spec_helper"
+
+describe Integer, "shrinking" do
+
+  property("lazy"){|n| n.propq.is_a?(Enumerator) }
+    .check{|s| Integer.propr }
+
+  context "zero" do
+    property("empty"){|n| n.propq.to_a.empty? }
+      .check(0)
+  end
+
+  context "non-zero" do
+    property("contains zero"){|n| n.propq.member?(0) }
+      .check{|s| s.guard(Integer.propr){|n| n != 0 }}
+  end
+
+  context "negative" do
+    property("greater than"){|n| n.propq.all?{|m| m > n }}
+      .check{|s| Integer.propr(max: -1) }
+  end
+
+  context "positive" do
+    property("less than"){|n| n.propq.all?{|m| m < n }}
+      .check{|s| Integer.propr(min: 1) }
+  end
+
+end
