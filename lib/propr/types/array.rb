@@ -10,17 +10,17 @@ class Array
   def propq
     return [] if empty?
 
-    Enumerator.unfold(self) do |seed|
-      # Remove each element, one-at-a-time
-      # Shrink each element, one-at-a-time
+    Enumerator.new do |yielder|
+      size.times do |n|
+      end
     end
   end
 end
 
 class << Array
   def propr(options = {}, &block)
-    min  = options.fetch(:min, 0)
-    max  = options.fetch(:max, 10)
+    min  = options[:min] || 0
+    max  = options[:max] || 10
     size = Integer.propr(min: min, max: max)
     size.times.map { block.call }
   end
