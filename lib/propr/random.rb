@@ -19,8 +19,12 @@ module Propr
     end
 
     # Throw a GuardFailure if condition is false
-    def guard(condition)
-      condition or raise GuardFailure
+    def guard(values)
+      if yield(*values)
+        values
+      else
+        raise GuardFailure
+      end
     end
 
     # Execute `call` on a random element from the given sequence
