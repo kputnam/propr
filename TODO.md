@@ -11,9 +11,9 @@ Priorities
 
 Specifics
 
-* Re-implement guards
-* Re-consider sized values (magntitude,center) or range?
-* Re-implement sized values (array, string, hash)
+* Stateful random generation, infer when to reset state
+  * Re-consider sized values (magntitude,center) or range?
+  * Re-implement sized values (array, string, hash)
 * Steal `collect` and `classify` from QuickCheck
 
     property("foo") { ... }
