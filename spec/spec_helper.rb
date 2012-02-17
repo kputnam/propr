@@ -9,6 +9,8 @@ Pathname.new(File.dirname(__FILE__)).tap do |specdir|
 end
 
 RSpec.configure do |config|
+  include Propr::RSpec
+
   # rspec -I lib -t random spec
   # config.filter_run :random => true
 
