@@ -1,0 +1,14 @@
+require "spec_helper"
+
+describe Integer, "#propr" do
+
+  property("min"){|n| n >= 0 }
+    .check{|s| Integer.propr(min: 0) }
+
+  property("max"){|n| n <= 0 }
+    .check{|s| Integer.propr(max: 0) }
+
+  property("min and max"){|n| n <= 10 and n >= -10 }
+    .check{|s| Integer.propr(min: -10, max: 10) }
+
+end
