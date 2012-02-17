@@ -22,13 +22,12 @@ module Propr
             remaining.times do |n|
               input = yield(property.rand)
               property.call(input) \
-                or property.error("Falsifiable after #{n} tests", location)
+                or property.error("Falsifiable after #{100 - remaining} tests", location)
               remaining -= 1
             end
           rescue => e
-            retry if (retries -= 1) > 0
+            retry if e.is_a?(GuardFailure) and (retries -= 1) > 0
             e = e.class.new "(no message)" if e.message.frozen?
-            e.message << "\n    after #{100 - remaining} passed"
             e.message << "\n    with: #{property.withfmt(input)}"
             e.message << "\n    seed: #{srand}"
             raise e
@@ -40,7 +39,7 @@ module Propr
             property.call(*input) \
               or property.error("Falsifiable", location)
           rescue => e
-            retry if (retries -= 1) > 0
+            retry if e.is_a?(GuardFailure) and (retries -= 1) > 0
             e = e.class.new "(no message)" if e.message.frozen?
             e.message << "\n    with: #{property.withfmt(input)}"
             e.message << "\n    seed: #{srand}"
