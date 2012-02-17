@@ -35,7 +35,10 @@ class << String
 
   # @return [String]
   def propr(options = {})
+    min     = options.fetch(:min, 0)
+    max     = options.fetch(:max, 10)
+    size    = Integer.propr(min: min, max: max)
     charset = Characters.of(options.fetch(:charset, :print))
-    (0..10).map{|_| charset.propo }.join
+    size.map{|_| charset.propo }.join
   end
 end
