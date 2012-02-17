@@ -1,8 +1,3 @@
-# require "date"
-# require "complex"
-# require "rational"
-# require "bigdecimal"
-
 module Propr
   class Random
     include Propr::Base
@@ -26,33 +21,6 @@ module Propr
     # Throw a GuardFailure if condition is false
     def guard(condition)
       condition or raise GuardFailure
-    end
-
-    # Generates an element from the given sequence or range of values.
-    def oneof(values)
-      case values
-      when Array
-        values[integer(0...values.length)]
-      when Range
-        case values.first
-        when Integer
-          integer(values)
-        when Float
-          float(values)
-        when BigDecimal
-          decimal(values)
-        when Date
-          date(values)
-        when Time
-          time(values)
-        else
-          oneof(values.to_a)
-        end
-      when Hash
-        oneof(values.keys).tap{|k| [k, values[k]] }
-      else
-        oneof(values.to_a)
-      end
     end
 
     # Execute `call` on a random element from the given sequence
