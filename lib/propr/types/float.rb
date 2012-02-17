@@ -13,8 +13,8 @@ end
 class << Float
   # @return [Float]
   def propr(options = {})
-    min = options.fetch(:min, -Float::INFINITY).to_f
-    max = options.fetch(:max,  Float::INFINITY).to_f
+    min = (options[:min] || -Float::INFINITY).to_f
+    max = (options[:max] ||  Float::INFINITY).to_f
 
     min_ = if min.finite? then min else -Float::MAX end
     max_ = if max.finite? then max else  Float::MAX end
