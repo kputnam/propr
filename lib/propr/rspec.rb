@@ -12,16 +12,23 @@ module Propr
       # This is to work around RSpec's magic dynamic scoping
       property = self
       location = location(block || caller)
+      retries  = 500
 
       if block_given?
+        remaining = 100
+
         @group.example(@name, @options.merge(caller: location)) do
           begin
-            100.times do |n|
+            remaining.times do |n|
               input = yield(property.rand)
-              property.call(*input) \
+              property.call(input) \
                 or property.error("Falsifiable after #{n} tests", location)
+              remaining -= 1
             end
           rescue => e
+            retry if (retries -= 1) > 0
+            e = e.class.new "(no message)" if e.message.frozen?
+            e.message << "\n    after #{100 - remaining} passed"
             e.message << "\n    with: #{input.inspect}"
             e.message << "\n    seed: #{srand}"
             raise e
@@ -33,6 +40,8 @@ module Propr
             property.call(*input) \
               or property.error("Falsifiable", location)
           rescue => e
+            retry if (retries -= 1) > 0
+            e = e.class.new "(no message)" if e.message.frozen?
             e.message << "\n    with: #{input.inspect}"
             e.message << "\n    seed: #{srand}"
             raise e
