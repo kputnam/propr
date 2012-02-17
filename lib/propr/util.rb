@@ -22,7 +22,7 @@ module Propr
     end
   end
 
-  class None
+  class None_
     def map
       self
     end
@@ -36,7 +36,7 @@ module Propr
     end
   end
 
-  None = None.new
+  None = None_.new
 
 end
 
