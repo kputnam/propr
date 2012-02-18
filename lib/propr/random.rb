@@ -7,7 +7,7 @@ module Propr
     # `Random`, as `this` is late-binding.
     #
     # @return [Propr::Property]
-    def property(name, &body)
+    def self.property(name, &body)
       Property.new(name, self, body)
     end
 

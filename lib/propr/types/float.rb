@@ -24,12 +24,6 @@ class << Float
     big  = BigDecimal(int.to_s) + BigDecimal(min_.to_s)
     big += rand
 
-    # @todo: This is not a useful distribution
-    #hoices = [big]
-    #hoices.push(-Float::INFINITY)  unless max.finite?
-    #hoices.push(Float::INFINITY)   unless max.finite?
-    #hoices.push(-0.0)       if min <= 0 and max >= 0
-    #hoices.push(Float::NAN) if options.fetch(:nan, true)
-    #hoices.propo
+    # @todo: -Float::INFINITY, +Float::INFINITY, -0.0, Float::NAN
   end
 end
