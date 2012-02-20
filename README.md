@@ -102,7 +102,7 @@ the same inputs for the entire test suite:
 
 Properties are basically just functions, they should return `true` or `false`.
 
-    p = Propr::Base.property("name"){|a,b| a + b == b + a }
+    p = Propr::Random.property("name"){|a,b| a + b == b + a }
 
 You can invoke a property using `#check`. Like lambdas and procs, you can also
 invoke them using `#call` or `#[]`.
@@ -111,10 +111,10 @@ invoke them using `#call` or `#[]`.
     p.check("x", "y") #=> true
 
 But you can also invoke them with a setup function that generates random
-arguments. The setup function is passed an instance of `Propr::Base`.
+arguments. The setup function is passed an instance of `Propr::Random`.
 
-    p.check{|rand| [rand.integer, rand.float] } #=> true
-    p.check{|rand| [rand.array, rand.array] }   #=> true
+    p.check{|rand| [Integer.propr, Float.propr] } #=> true
+    p.check{|rand| [Array.propr, Array.propr] }   #=> true
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
