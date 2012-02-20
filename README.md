@@ -290,7 +290,7 @@ Create a string matching the given character class
 
 Create a 4-element array of 4-character strings
 
-    >> Array.propr(min:4, max:4) { String.propr(min:4, max:4) }}
+    >> Array.propr(min:4, max:4) { String.propr(min:4, max:4) }
     => ["2n #", "UZ1d", "0vF,", "cV_{"]
 
 ### Hash
