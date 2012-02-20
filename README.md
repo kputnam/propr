@@ -38,7 +38,7 @@ describe Array do
     # Property-based test
     property("sums lengths"){|xs, ys| (xs + ys).length == xs.length + ys.length }
       .check([100, "x", :zz], [:ww, 200])
-      .check{|rand| [rand.array, rand.array] }
+      .check{ [Array.propr, Array.propr] }
   end
 end
 ```
@@ -61,7 +61,7 @@ describe Array do
     # Property-based test
     property("sums lengths"){|xs, ys| (xs | ys).length == xs.length + ys.length }
       .check([100, "x", :zz], [:ww, 200])
-      .check{|rand| [rand.array, rand.array] }
+      .check{ [Array.propr, Array.propr] }
   end
 end
 ```
@@ -133,7 +133,7 @@ class FooTest < Test::Unit::TestCase
   property("length"){|a| a.length >= 0 }
     check("abc").
     check("xyz").
-    check{|rand| rand.string }.
+    check{ String.propr }.
 end
 ```
 
@@ -141,301 +141,172 @@ Note your property should still return `true` or `false`. You can avoid some
 clutter by *not* using `#should` or `#assert`, because the test generator
 will generate the assertion for you.
 
-By default, `rand` will be an instance of `Propr::Base`. If you want to use
-some other generator you can pass a parameter on the `include` line like so:
-
-    class FooTest < Test::Unit::TestCase
-      include Propr::TestUnit(RandomFoos.new)
-    end
-
 This is just a convenience, though. You can call `Propr::Rspec.define` or
 `Propr::TestUnit.define` to generate test cases, too.
 
-    Propr::TestUnit.define(Propr::Base.property("length"){|a| a.length >= 0 }).
+    Propr::TestUnit.define(Propr::Random.property("length"){|a| a.length >= 0 }).
       check("abc").
       check("xyz").
-      check{|rand| rand.string }
+      check{ String.propr }
 
 ## Generating Random Values
 
-    >> p = Propr::Base.new
+Propr defines a `propr` constructor method on most standard Ruby types.
 
 ### Boolean
 
-    >> p.boolean
+    >> Boolean.propr
     => true
 
 ### Numeric
 
 #### Integer
 
-Random integer between Propr::INTMIN and Propr::INTMAX
+Random integer between Integer::MIN and Integer::MAX
 
-    >> p.integer
+    >> Integer.propr
     => -1830258881470840048
 
 Random integer between 0 and 10
 
-    >> p.integer(10)
+    >> Integer.prop(max: 0, min: 10)
     => 6
-
-Random integer between 10 and 20
-
-    >> p.integer(10..20)
-    => 19
 
 #### Float
 
-Random float between Propr::INTMIN and Propr::INTMAX
+Random float between -Float::MAX and Float::MAX
 
-    >> p.float
+    >> Float.propr
     => 1769470177.4186616
 
 Random float between 0 and 10
 
-    >> p.float(10)
+    >> Float.propr(min: 0, max: 10)
     => 8.47034059208399
-
-Random float between 10 and 20
-
-    >> p.float(10..20)
-    => 14.58723928680602
 
 #### Rational
 
-    >> p.rational
+    >> Rational.new(Integer.propr, Integer.propr)
     => (3419121051897208321/513829382835133827)
-
-    >> Rational(p.integer(-5000..5000), p.integer(0..10))
-    => (735/2)
 
 #### BigDecimal
 
-    >> p.bigdecimal.to_s("F")
+    >> BigDecimal.propr.to_s("F")
     => "7936297730318639394.320561703810327716036557741373593518621908133293211327"
 
-    >> p.bigdecimal(10..20).to_s("F")
+    >> BigDecimal.propr(min: 10, max: 20).to_s("F")
     => "14.934854011762374703280016489856414847259220844969789892"
 
 #### Bignum
 
-    TODO
+There's no constructor specifically for `Bignum`, but you can use `Integer.propr`
+and provide a `min: n` larger than INTMAX.
 
 #### Complex
 
-    >> Complex(p.integer(-10..10), p.integer(-10..10))
+    >> Complex(Integer.propr(min:-10, max:10), Integer.propr(min:-10, max:10))
     => (-2+1i)
 
-    >> Complex(p.float(-10..10), p.float(-10..10))
+    >> Complex(Float.propr(min:-10, max:10), Float.propr(min:-10, max:10))
     => (9.806161068637833+7.523520738439842i)
 
 ### Character
 
-    >> p.character
+    >> String.propr(min: 1, max: 1)
     => "2"
-
-Create a character matching the given character class
-
-    => p.character(:alnum)
-    => "Q"
-
-    => p.character(:alpha)
-    => "E"
-
-    => p.character(:blank)
-    => "\t"
-
-    => p.character(:cntrl)
-    => "\x17"
-
-    => p.character(:digit)
-    => "2"
-
-    => p.character(:graph)
-    => "("
-
-    => p.character(:lower)
-    => "t"
-
-    => p.character(:print)
-    => "]"
-
-    => p.character(:punct)
-    => "\\"
-
-    => p.character(:space)
-    => "\r"
-
-    => p.character(:upper)
-    => "R"
-
-    => p.character(:xdigit)
-    => "1"
-
-    => p.character(:ascii)
-    => "\x12"
-
-    => p.character(:any)
-    => " "
 
 ### Date
 
-    => p.date
+    => Date.propr
     >> #<Date: 3388-04-30 (5917243/2,0,2299161)>
 
-    => p.date.to_s
-    >> "2925-12-15"
+    => Date.propr(min: Date.today - 10, max: Date.today + 10).to_s
+    >> "2012-03-01"
 
 ### Time
 
-    => p.time
+    => Time.propr
     >> 3099-12-23 20:00:53 -0600
 
-### DateTime
-
-    TODO
-
-### Sized-Values
-
-    >> p.size
-    => 6
-
-    >> p.with(size: 10) { p.size }
-    => 10
+    => Time.propr(min: Time.now, max: Time.now + 3600)
+    => 2012-02-20 13:47:57 -0600
 
 ### String
 
-    >> p.string
+    >> String.propr
     => " BW05a"
 
-    >> p.with(size: 4) { p.string }
+    >> String.propr(min: 2, max: 4)
     => "b`R{"
 
 Create a string matching the given character class
 
-    >> p.string(:alnum)
+    >> String.propr(charset: :alnum)
     => "dX8PzV"
 
-    >> p.string(:alpha)
+    >> String.propr(charset: :alpha)
     => "yaTCXP"
 
-    >> p.string(:blank)
+    >> String.propr(charset: :blank)
     => " \t  \t\t"
 
-    >> p.string(:cntrl)
+    >> String.propr(charset: :cntrl)
     => "\x00\x0F\x04\x12\x1C\x02"
 
-    >> p.string(:digit)
+    >> String.propr(charset: :digit)
     => "500961"
 
-    >> p.string(:graph)
+    >> String.propr(charset: :graph)
     => "i;NAb!"
 
-    >> p.string(:lower)
+    >> String.propr(charset: :lower)
     => "llrqzi"
 
-    >> p.string(:print)
+    >> String.propr(charset: :print)
     => ":zER**"
 
-    >> p.string(:punct)
+    >> String.propr(charset: :punct)
     => "=&{%_("
 
-    >> p.string(:space)
+    >> String.propr(charset: :space)
     => " \f\t\n\v\r"
 
-    >> p.string(:upper)
+    >> String.propr(charset: :upper)
     => "TSLVVO"
 
-    >> p.string(:xdigit)
+    >> String.propr(charset: :xdigit)
     => "54fEe7"
 
-    >> p.string(:ascii)
+    >> String.propr(charset: :ascii)
     => "zS9l.@"
 
-    >> p.string(:any)
+    >> String.propr(charset: :any)
     => "\nx\xC0\xE1\xB3\x86"
 
-    >> p.string(/[A-z]/)
-    => "hQEVyV"
+    >> String.propr(charset: /[w-z]/)
+    => "wxxzwwx"
 
 ### Array
 
-Create an element of random values with the default size
-
-    >> p.array
-    => ["#", "ocvyUQ", true, "-b~M;:", 0.22744564047913196, true]
-
 Create a 4-element array of 4-character strings
 
-    >> p.with(size: 4) { p.array { p.string }}
+    >> Array.propr(min:4, max:4) { String.propr(min:4, max:4) }}
     => ["2n #", "UZ1d", "0vF,", "cV_{"]
-
-Create a 4-element array of 2-character strings
-
-    >> p.with(size: 4) { p.array { p.with(size: 2) { p.string }}}
-    => [":t", "u9", "K#", "_O"]
 
 ### Hash
 
     TODO
 
-### Constant
-
-    >> p.literal(400)
-    => 400
-
-## Evaluation
-
-Randomly selects a value
-
-    >> p.oneof(["a", "b", "x", "y"])
-    => "x"
-
-Call the given generator
-
-    >> p.call(:integer)
-    => 6375782241601633756
-
-Call the given generator with arguments
-
-    >> p.call(:integer, 0..20)
-    => 4
-
-Call the given generator with arguments
-
-    >> p.call([:integer, 0..20])
-    => 18
-
-Randomly choose a generator and `call` it
-
-    >> p.branch([:integer, :character])
-    => "H"
-
-Weighted branches: character 10 times more probable than integer
-
-    >> p.freq([1, :integer], [10, :character])
-    => "a"
-
 ## Guards
 
 Throws Propr::GuardFailure
 
-    >> p.guard 111.even?
+    >> guard(111, &:even?)
 
-Retries, max 10 times, until guard passes
+Returns `112`
 
-    >> p.value { x = integer; guard x.even?; x }
-    => 12339491166734657382
-
-Using Object#tap
-
-    >> p.value { integer.tap{|x| guard x.even? }}
-    => 12277061243321644106
-
-Retries, max 99 times, until guard passes
-
-    >> p.value(99) { integer.tap{|x| guard x.even? }}
-    => 13232541365560615358
+    >> guard(112, &:even?)
+    => 112
 
 ## Related Projects
 
