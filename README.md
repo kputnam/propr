@@ -311,5 +311,6 @@ Returns `112`
 ## Related Projects
 
 * [Rantly](https://github.com/hayeah/rantly)
+* [PropER](https://github.com/manopapad/proper)
 * [QuviQ](http://www.quviq.com/documents/QuviqFlyer.pdf)
 * [QuickCheck](http://www.haskell.org/haskellwiki/Introduction_to_QuickCheck)
