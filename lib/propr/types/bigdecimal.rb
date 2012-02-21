@@ -2,7 +2,7 @@ require "bigdecimal"
 
 class BigDecimal
   # @return [Enumerator<BigDecimal>]
-  def propq
+  def shrink
     Enumerator.unfold(self) do |seed|
       seed_ = seed / 2
       ((seed - seed_).abs > Float::MIN).maybe([self - seed, seed_])
@@ -15,7 +15,7 @@ class << BigDecimal
   NAN = BigDecimal('NaN')
 
   # @return [BigDecimal]
-  def propr(options = {})
+  def random(options = {})
     min = (options[:min] || -INF).to_f
     max = (options[:max] ||  INF).to_f
 

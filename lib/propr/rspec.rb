@@ -15,14 +15,14 @@ module Propr
       retries  = 500
 
       if block_given?
-        remaining = 100
+        remaining = 250
 
         @group.example(@name, @options.merge(caller: location)) do
           begin
             remaining.times do |n|
               input = yield(property.rand)
               property.call(input) \
-                or property.error("Falsifiable after #{100 - remaining} tests", location)
+                or property.error("Falsifiable after #{250 - remaining} tests", location)
               remaining -= 1
             end
           rescue => e

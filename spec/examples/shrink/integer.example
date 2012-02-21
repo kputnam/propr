@@ -1,0 +1,28 @@
+require "spec_helper"
+
+describe Integer, "#shrink" do
+
+  property("lazy"){|n| n.shrink.is_a?(Enumerator) }
+    .check{|s| Integer.random }
+
+  context "zero" do
+    property("empty"){|n| n.shrink.to_a.empty? }
+      .check(0)
+  end
+
+  context "non-zero" do
+    property("contains zero"){|n| n.shrink.member?(0) }
+      .check{|s| s.guard(Integer.random){|n| n != 0 }}
+  end
+
+  context "negative" do
+    property("greater than"){|n| n.shrink.all?{|m| m > n }}
+      .check{|s| Integer.random(max: -1) }
+  end
+
+  context "positive" do
+    property("less than"){|n| n.shrink.all?{|m| m < n }}
+      .check{|s| Integer.random(min: 1) }
+  end
+
+end

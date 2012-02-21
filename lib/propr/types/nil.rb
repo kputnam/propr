@@ -1,11 +1,11 @@
 class NilClass
-  def propq
+  def shrink
     []
   end
 end
 
 class << NilClass
-  def propr
+  def random
     self
   end
 end

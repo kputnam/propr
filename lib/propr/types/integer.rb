@@ -1,6 +1,6 @@
 class Integer
   # @return [Enumerator<Integer>]
-  def propq
+  def shrink
     Enumerator.unfold(self) do |seed|
       seed_ = seed / 2
       (seed != seed_).maybe([self - seed, seed_])
@@ -13,7 +13,7 @@ class << Integer
   INTMIN = -INTMAX + 1
 
   # @return [Integer]
-  def propr(options = {})
+  def random(options = {})
     min = options[:min] || INTMIN
     max = options[:max] || INTMAX
     raise ArgumentError,
