@@ -16,9 +16,12 @@ module Propr
     def check(*args)
       if block_given?
         iterations = 0..100
-        iterations.all? { @body.call(*yield(@rand)) }
+        iterations.all? do
+          args = yield(rand)
+          @rand.instance_exec(*args, &@body)
+        end
       else
-        @body.call(*args)
+        @rand.instance_exec(*args, &@body)
       end
     end
 
@@ -27,11 +30,11 @@ module Propr
     end
 
     def call(*args, &block)
-      @body.call(*args, &block)
+      @rand.instance_exec(*args, &@body)
     end
 
     def [](*args, &block)
-      @body[*args, &block]
+      @rand.instance_exec(*args, &@body)
     end
 
   end
