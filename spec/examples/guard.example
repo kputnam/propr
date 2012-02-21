@@ -1,0 +1,25 @@
+require "spec_helper"
+
+describe Propr, "guard" do
+
+  specify "callable from property { ... }" do
+    Propr::Random.property("name") do |n|
+      guard(n > 0); true
+    end.check(100).should == true
+  end
+
+  property "callable from property" do |n|
+    guard(n > 0); true
+  end.check(100)
+
+  specify "callable from check { ... }" do
+    Propr::Random.property("name") do |n|
+      n == 100
+    end.check {|s| s.guard(100, &:even?) }
+  end
+
+  property("callable from check") do |n|
+    n == 100
+  end.check{|s| s.guard(100, &:even?) }
+
+end

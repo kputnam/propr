@@ -1,48 +1,37 @@
 module Propr
   class Random
-    include Propr::Base
-
     # Create a property which can be checked with random data generated
     # by this instance. Doesn't need to be overridden in subclasses of
     # `Random`, as `this` is late-binding.
     #
     # @return [Propr::Property]
     def self.property(name, &body)
-      Property.new(name, self, body)
+      Property.new(name, new, body)
     end
 
-    # Returns the given value
-    #
-    # @return [Object]
-    def literal(value)
-      value
-    end
-
-    # Throw a GuardFailure if condition is false
-    def guard(values)
-      if yield(*values)
-        values
+    # Throw a GuardFailure if predicate is not satisfied, or return the
+    # given value. When no predicate is given, throws GuardFailure if
+    # the given value is not truthy.
+    def guard(value)
+      if block_given?
+        if yield(*value)
+          value
+        else
+          raise GuardFailure
+        end
       else
-        raise GuardFailure
+        value or raise GuardFailure
       end
     end
 
-    # Execute `call` on a random element from the given sequence
-    def branch(generators)
-      call(oneof(generators))
-    end
-
-    def call(generator, *args)
-      case generator
-      when Symbol, String
-        send(generator, *args)
-      when Array
-        send(generator[0], *generator[1..-1])
-      when Proc
-        generator.call(self)
-      else
-        raise ArgumentError, "unrecognized generator type #{generator.inspect}"
+    def fails?(type = Exception)
+      begin
+        yield
+        false
+      rescue => e
+        e.is_a?(type)
       end
     end
+
   end
 end

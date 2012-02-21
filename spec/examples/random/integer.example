@@ -20,13 +20,4 @@ describe Integer, ".random" do
   property("min <= max"){|a,b| fails? { Integer.random(min: a, max: b) }}
     .check{|s| s.guard([Integer.random, Integer.random], &:>) }
 
-  def self.fails?(type = Exception)
-    begin
-      yield
-      false
-    rescue => e
-      e.is_a?(type)
-    end
-  end
-
 end
