@@ -13,11 +13,11 @@ module Propr
     end
 
     # @return [Boolean]
-    def check(*args)
+    def check(*args, &block)
       if block_given?
         iterations = 0..100
         iterations.all? do
-          args = yield(rand)
+          args = @rand.instance_exec(&block)
           @rand.instance_exec(*args, &@body)
         end
       else

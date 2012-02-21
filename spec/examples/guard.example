@@ -15,11 +15,11 @@ describe Propr, "guard" do
   specify "callable from check { ... }" do
     Propr::Random.property("name") do |n|
       n == 100
-    end.check {|s| s.guard(100, &:even?) }
+    end.check { guard(100, &:even?) }
   end
 
   property("callable from check") do |n|
     n == 100
-  end.check{|s| s.guard(100, &:even?) }
+  end.check{ guard(100, &:even?) }
 
 end

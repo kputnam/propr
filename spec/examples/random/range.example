@@ -4,28 +4,28 @@ describe Range, ".random" do
 
   context "min" do
     property("bounded"){|n| Range.random(min: n).first >= n }
-      .check{|s| Integer.random }
+      .check{ Integer.random }
   end
 
   context "max" do
     property("bounded"){|n| Range.random(max: n).last <= n }
-      .check{|s| Integer.random }
+      .check{ Integer.random }
   end
 
   context "min and max" do
-    property("bounded"){|a,b| Range.random(min: a, max: b).first >= a }
-      .check{|s| s.guard([Integer.random, Integer.random], &:<=) }
+    property("bounded"){|a,b| guard a <= b; Range.random(min: a, max: b).first >= a }
+      .check{ [Integer.random, Integer.random] }
 
     property("bounded"){|a,b| Range.random(min: a, max: b).last <= b }
-      .check{|s| s.guard([Integer.random, Integer.random], &:<=) }
+      .check{ guard([Integer.random, Integer.random], &:<=) }
   end
 
   context "inclusive?" do
     property("true"){|r| not r.exclude_end? }
-      .check{|s| Range.random(inclusive?: true, min: -5, max: 5) }
+      .check{ Range.random(inclusive?: true, min: -5, max: 5) }
 
     property("false"){|r| r.exclude_end? }
-      .check{|s| Range.random(inclusive?: false, min: -5, max: 5) }
+      .check{ Range.random(inclusive?: false, min: -5, max: 5) }
   end
 
   context "block" do

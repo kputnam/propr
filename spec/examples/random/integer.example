@@ -3,21 +3,21 @@ require "spec_helper"
 describe Integer, ".random" do
 
   property("min"){|n| n >= 0 }
-    .check{|s| Integer.random(min: 0) }
+    .check{ Integer.random(min: 0) }
 
   property("max"){|n| n <= 0 }
-    .check{|s| Integer.random(max: 0) }
+    .check{ Integer.random(max: 0) }
 
   property("min and max"){|n| n <= 10 and n >= -10 }
-    .check{|s| Integer.random(min: -10, max: 10) }
+    .check{ Integer.random(min: -10, max: 10) }
 
   property("min and max"){|n| n <= 10 and n >= -10 }
-    .check{|s| Integer.random(min: -10, max: 10) }
+    .check{ Integer.random(min: -10, max: 10) }
 
   property("min == max"){|n| Integer.random(min: n, max: n) == n }
-    .check{|s| Integer.random }
+    .check{ Integer.random }
 
-  property("min <= max"){|a,b| fails? { Integer.random(min: a, max: b) }}
-    .check{|s| s.guard([Integer.random, Integer.random], &:>) }
+  property("min <= max"){|a,b| guard a > b; fails? { Integer.random(min: a, max: b) }}
+    .check{ [Integer.random, Integer.random] }
 
 end
