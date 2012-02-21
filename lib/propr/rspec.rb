@@ -20,7 +20,7 @@ module Propr
         @group.example(@name, @options.merge(caller: location)) do
           begin
             remaining.times do |n|
-              input = yield(property.rand)
+              input = property.rand.instance_exec(&block)
               property.call(input) \
                 or property.error("Falsifiable after #{250 - remaining} tests", location)
               remaining -= 1
