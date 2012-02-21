@@ -1,6 +1,6 @@
 class String
   # @return [Enumerator<String>]
-  def propq
+  def shrink
     Enumerator.unfold(self) do |seed|
     end
   end
@@ -34,11 +34,11 @@ class << String
   end
 
   # @return [String]
-  def propr(options = {})
+  def random(options = {})
     min     = options.fetch(:min, 0)
     max     = options.fetch(:max, 10)
-    size    = Integer.propr(min: min, max: max)
+    size    = Integer.random(min: min, max: max)
     charset = Characters.of(options.fetch(:charset, :print))
-    size.map{|_| charset.propo }.join
+    size.times.map{|_| charset.random }.join
   end
 end

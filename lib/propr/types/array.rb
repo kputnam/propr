@@ -1,13 +1,13 @@
 class Array
-  def propo
+  def random
     if empty?
       raise "no elements"
     else
-      self[Integer.propr(min: 0, max: length - 1)]
+      self[Integer.random(min: 0, max: length - 1)]
     end
   end
 
-  def propq
+  def shrink
     return [] if empty?
 
     Enumerator.new do |yielder|
@@ -18,10 +18,10 @@ class Array
 end
 
 class << Array
-  def propr(options = {}, &block)
+  def random(options = {}, &block)
     min  = options[:min] || 0
     max  = options[:max] || 10
-    size = Integer.propr(min: min, max: max)
+    size = Integer.random(min: min, max: max)
     size.times.map { block.call }
   end
 end

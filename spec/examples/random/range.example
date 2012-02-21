@@ -1,0 +1,43 @@
+require "spec_helper"
+
+describe Range, ".random" do
+
+  context "min" do
+    property("bounded"){|n| Range.random(min: n).first >= n }
+      .check{|s| Integer.random }
+  end
+
+  context "max" do
+    property("bounded"){|n| Range.random(max: n).last <= n }
+      .check{|s| Integer.random }
+  end
+
+  context "min and max" do
+    property("bounded"){|a,b| Range.random(min: a, max: b).first >= a }
+      .check{|s| s.guard([Integer.random, Integer.random], &:<=) }
+
+    property("bounded"){|a,b| Range.random(min: a, max: b).last <= b }
+      .check{|s| s.guard([Integer.random, Integer.random], &:<=) }
+  end
+
+  context "inclusive?" do
+    property("true"){|r| not r.exclude_end? }
+      .check{|s| Range.random(inclusive?: true, min: -5, max: 5) }
+
+    property("false"){|r| r.exclude_end? }
+      .check{|s| Range.random(inclusive?: false, min: -5, max: 5) }
+  end
+
+  context "block" do
+    specify "called twice" do
+      count = 0
+      range = Range.random(inclusive?: true) { count += 1 }
+      range.should == (1..2)
+    end
+  end
+
+  specify "args required" do
+    lambda { Range.random }.should raise_error
+  end
+
+end

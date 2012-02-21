@@ -2,7 +2,7 @@ require "bigdecimal"
 
 class Float
   # @return [Enumerator<Float>]
-  def propq
+  def shrink
     Enumerator.unfold(self) do |seed|
       seed_ = seed / 2
       (seed != seed_).maybe([self - seed, seed_])
@@ -12,7 +12,7 @@ end
 
 class << Float
   # @return [Float]
-  def propr(options = {})
+  def random(options = {})
     min = (options[:min] || -Float::INFINITY).to_f
     max = (options[:max] ||  Float::INFINITY).to_f
 

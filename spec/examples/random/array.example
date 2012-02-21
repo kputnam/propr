@@ -1,0 +1,36 @@
+require "spec_helper"
+
+describe Array, ".random" do
+
+  context "min and max" do
+    property("bounded"){|a,b| Array.random(min: a, max: b) { "elem" }.length >= a }
+      .check{|s| s.guard([Integer.random(min: -10, max: 10), Integer.random(min: 0, max: 20)], &:<=) }
+
+    property("bounded"){|a,b| Array.random(min: a, max: b) { "elem" }.length <= b }
+      .check{|s| s.guard([Integer.random(min: -10, max: 10), Integer.random(min: 0, max: 20)], &:<=) }
+
+    property("empty"){|xs| xs.empty? }
+      .check(Array.random(min: 0, max: 0) { nil })
+
+    property("singleton"){|xs| xs == [nil] }
+      .check(Array.random(min: 1, max: 1) { nil })
+  end
+
+  context "items" do
+    property("sequence"){|xs| xs.uniq.length == xs.length }
+      .check{|s| x = 0; Array.random { x += 1 }}
+
+    property("sequence"){|xs| xs.empty? or xs.first == 1 }
+      .check{|s| x = 0; Array.random { x += 1 }}
+
+    property("sequence"){|xs| xs.empty? or xs.last == xs.length }
+      .check{|s| x = 0; Array.random { x += 1 }}
+
+    property("repeat"){|xs| xs.uniq.length <= 1 }
+      .check{|s| Array.random { 100 }}
+
+    property("repeat"){|xs| xs == [100]*xs.length }
+      .check{|s| Array.random { 100 }}
+  end
+
+end

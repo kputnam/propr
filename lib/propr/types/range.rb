@@ -1,11 +1,11 @@
 class Range
-  def propo
-    min.class.propr(min: min, max: max)
+  def random
+    min.class.random(min: min, max: max)
   end
 end
 
 class << Range
-  def propr(options = {})
+  def random(options = {})
     a, b =
       if block_given?
         [yield, yield]
@@ -16,8 +16,8 @@ class << Range
         min or max or raise ArgumentError,
           "must provide min, max, or block"
 
-        [(min or max).class.propr(min: min, max: max),
-         (min or max).class.propr(min: min, max: max)]
+        [(min or max).class.random(min: min, max: max),
+         (min or max).class.random(min: min, max: max)]
       end
 
     if options.fetch(:inclusive?, rand > 0.5)

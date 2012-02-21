@@ -1,17 +1,17 @@
 class Boolean
-  def self.propr
+  def self.random
     Kernel.rand > 0.5
   end
 end
 
 class TrueClass
-  def propq
+  def shrink
     [false]
   end
 end
 
 class FalseClass
-  def propq
+  def shrink
     []
   end
 end
