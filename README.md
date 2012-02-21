@@ -30,15 +30,15 @@ describe Array do
   describe "#+" do
     # Traditional unit test
     it "sums lengths" do
-      xs = [100, "x", :zz]
-      ys = [:ww, 200]
+      xs = [100, 200, 300]
+      ys = [500, 200]
       (xs + ys).length.should == xs.length + ys.length
     end
 
     # Property-based test
     property("sums lengths"){|xs, ys| (xs + ys).length == xs.length + ys.length }
-      .check([100, "x", :zz], [:ww, 200])
-      .check{ [Array.propr, Array.propr] }
+      .check([100, 200, 300], [500, 200])
+      .check{ [Array.random { Integer.random }, Array.random { Integer.random }] }
   end
 end
 ```
@@ -53,15 +53,15 @@ describe Array do
   describe "#|" do
     # Traditional unit test
     it "sums lengths" do
-      xs = [100, "x", :zz]
-      ys = [:ww, 200]
+      xs = [100, 200, 300]
+      ys = [500, 200]
       (xs | ys).length.should == xs.length + ys.length
     end
 
     # Property-based test
     property("sums lengths"){|xs, ys| (xs | ys).length == xs.length + ys.length }
-      .check([100, "x", :zz], [:ww, 200])
-      .check{ [Array.propr, Array.propr] }
+      .check([100, 200, 300], [500, 200])
+      .check{ [Array.random { Integer.random }, Array.random { Integer.random }] }
   end
 end
 ```
@@ -111,10 +111,10 @@ invoke them using `#call` or `#[]`.
     p.check("x", "y") #=> true
 
 But you can also invoke them with a setup function that generates random
-arguments. The setup function is passed an instance of `Propr::Random`.
+arguments.
 
-    p.check{|rand| [Integer.propr, Float.propr] } #=> true
-    p.check{|rand| [Array.propr, Array.propr] }   #=> true
+    p.check{ [Integer.random, Float.random] } #=> true
+    p.check{ [Array.random, Array.random] }   #=> true
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
@@ -126,14 +126,14 @@ Mixing in a module magically defines the `property` singleton method, so
 you can use it to generate test cases.
 
 ```ruby
-class FooTest < Test::Unit::TestCase
-  include Propr::TestUnit
+describe "foo" do
+  include Propr::RSpec
 
   # This defines four test cases, one per each `check`
   property("length"){|a| a.length >= 0 }
     check("abc").
     check("xyz").
-    check{ String.propr }.
+    check{ String.random }.
 end
 ```
 
@@ -141,21 +141,18 @@ Note your property should still return `true` or `false`. You can avoid some
 clutter by *not* using `#should` or `#assert`, because the test generator
 will generate the assertion for you.
 
-This is just a convenience, though. You can call `Propr::Rspec.define` or
-`Propr::TestUnit.define` to generate test cases, too.
-
-    Propr::TestUnit.define(Propr::Random.property("length"){|a| a.length >= 0 }).
-      check("abc").
-      check("xyz").
-      check{ String.propr }
-
 ## Generating Random Values
 
-Propr defines a `propr` constructor method on most standard Ruby types.
+Propr defines a `random` constructor method on most standard Ruby types. Some
+generators require some implicit state, so when generating data outside of the
+body of `property { ... }` or the body of a `check { ... }` you must wrap the
+code with `Propr::Random.generate { ... }`. For instance,
+
+    Propr::Random.generate { Boolean.random }
 
 ### Boolean
 
-    >> Boolean.propr
+    >> Boolean.random
     => true
 
 ### Numeric
@@ -164,7 +161,7 @@ Propr defines a `propr` constructor method on most standard Ruby types.
 
 Random integer between Integer::MIN and Integer::MAX
 
-    >> Integer.propr
+    >> Integer.random
     => -1830258881470840048
 
 Random integer between 0 and 10
@@ -176,121 +173,122 @@ Random integer between 0 and 10
 
 Random float between -Float::MAX and Float::MAX
 
-    >> Float.propr
+    >> Float.random
     => 1769470177.4186616
 
 Random float between 0 and 10
 
-    >> Float.propr(min: 0, max: 10)
+    >> Float.random(min: 0, max: 10)
     => 8.47034059208399
 
 #### Rational
 
-    >> Rational.new(Integer.propr, Integer.propr)
+    >> Rational.new(Integer.random, Integer.random)
     => (3419121051897208321/513829382835133827)
 
 #### BigDecimal
 
-    >> BigDecimal.propr.to_s("F")
+    >> BigDecimal.random.to_s("F")
     => "7936297730318639394.320561703810327716036557741373593518621908133293211327"
 
-    >> BigDecimal.propr(min: 10, max: 20).to_s("F")
+    >> BigDecimal.random(min: 10, max: 20).to_s("F")
     => "14.934854011762374703280016489856414847259220844969789892"
 
 #### Bignum
 
-There's no constructor specifically for `Bignum`, but you can use `Integer.propr`
-and provide a `min: n` larger than INTMAX.
+There's no constructor specifically for Bignum, but you can use `Integer.random`
+and provide a large `min: n`. Ruby will automatically handle integer overflow by
+coercing to Bignum.
 
 #### Complex
 
-    >> Complex(Integer.propr(min:-10, max:10), Integer.propr(min:-10, max:10))
+    >> Complex(Integer.random(min:-10, max:10), Integer.random(min:-10, max:10))
     => (-2+1i)
 
-    >> Complex(Float.propr(min:-10, max:10), Float.propr(min:-10, max:10))
+    >> Complex(Float.random(min:-10, max:10), Float.random(min:-10, max:10))
     => (9.806161068637833+7.523520738439842i)
 
 ### Character
 
-    >> String.propr(min: 1, max: 1)
+    >> String.random(min: 1, max: 1)
     => "2"
 
 ### Date
 
-    => Date.propr
+    => Date.random
     >> #<Date: 3388-04-30 (5917243/2,0,2299161)>
 
-    => Date.propr(min: Date.today - 10, max: Date.today + 10).to_s
+    => Date.random(min: Date.today - 10, max: Date.today + 10).to_s
     >> "2012-03-01"
 
 ### Time
 
-    => Time.propr
+    => Time.random
     >> 3099-12-23 20:00:53 -0600
 
-    => Time.propr(min: Time.now, max: Time.now + 3600)
+    => Time.random(min: Time.now, max: Time.now + 3600)
     => 2012-02-20 13:47:57 -0600
 
 ### String
 
-    >> String.propr
+    >> String.random
     => " BW05a"
 
-    >> String.propr(min: 2, max: 4)
+    >> String.random(min: 2, max: 4)
     => "b`R{"
 
 Create a string matching the given character class
 
-    >> String.propr(charset: :alnum)
+    >> String.random(charset: :alnum)
     => "dX8PzV"
 
-    >> String.propr(charset: :alpha)
+    >> String.random(charset: :alpha)
     => "yaTCXP"
 
-    >> String.propr(charset: :blank)
+    >> String.random(charset: :blank)
     => " \t  \t\t"
 
-    >> String.propr(charset: :cntrl)
+    >> String.random(charset: :cntrl)
     => "\x00\x0F\x04\x12\x1C\x02"
 
-    >> String.propr(charset: :digit)
+    >> String.random(charset: :digit)
     => "500961"
 
-    >> String.propr(charset: :graph)
+    >> String.random(charset: :graph)
     => "i;NAb!"
 
-    >> String.propr(charset: :lower)
+    >> String.random(charset: :lower)
     => "llrqzi"
 
-    >> String.propr(charset: :print)
+    >> String.random(charset: :print)
     => ":zER**"
 
-    >> String.propr(charset: :punct)
+    >> String.random(charset: :punct)
     => "=&{%_("
 
-    >> String.propr(charset: :space)
+    >> String.random(charset: :space)
     => " \f\t\n\v\r"
 
-    >> String.propr(charset: :upper)
+    >> String.random(charset: :upper)
     => "TSLVVO"
 
-    >> String.propr(charset: :xdigit)
+    >> String.random(charset: :xdigit)
     => "54fEe7"
 
-    >> String.propr(charset: :ascii)
+    >> String.random(charset: :ascii)
     => "zS9l.@"
 
-    >> String.propr(charset: :any)
+    >> String.random(charset: :any)
     => "\nx\xC0\xE1\xB3\x86"
 
-    >> String.propr(charset: /[w-z]/)
+    >> String.random(charset: /[w-z]/)
     => "wxxzwwx"
 
 ### Array
 
 Create a 4-element array of 4-character strings
 
-    >> Array.propr(min:4, max:4) { String.propr(min:4, max:4) }
+    >> Array.random(min:4, max:4) { String.random(min:4, max:4) }
     => ["2n #", "UZ1d", "0vF,", "cV_{"]
 
 ### Hash
@@ -303,10 +301,18 @@ Throws Propr::GuardFailure
 
     >> guard(111, &:even?)
 
+Throws Propr::GuardFailure
+
+    >> guard(false)
+
 Returns `112`
 
     >> guard(112, &:even?)
     => 112
+
+Returns `"abc"`
+    >> guard("abc")
+    => "abc"
 
 ## Related Projects
 
