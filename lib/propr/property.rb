@@ -9,14 +9,13 @@ module Propr
 
     def initialize(name, rand, body)
       @name, @rand, @body =
-        name, rand, body || lambda {|*_| raise "default property" }
+        name, rand, body || lambda {|*_| raise "no block given to property" }
     end
 
     # @return [Boolean]
     def check(*args, &block)
       if block_given?
-        iterations = 0..100
-        iterations.all? do
+        100.times.all? do
           args = @rand.instance_exec(&block)
           @rand.instance_exec(*args, &@body)
         end

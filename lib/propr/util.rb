@@ -20,6 +20,10 @@ module Propr
     def none?
       false
     end
+
+    def shrink
+      [None, Some.new(@value.shrink)]
+    end
   end
 
   class None_
@@ -33,6 +37,10 @@ module Propr
 
     def some?
       false
+    end
+
+    def shrink
+      []
     end
   end
 

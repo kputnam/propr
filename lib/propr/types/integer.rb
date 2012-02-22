@@ -1,7 +1,7 @@
 class Integer
   # @return [Enumerator<Integer>]
   def shrink
-    Enumerator.unfold(self) do |seed|
+    Array.unfold(self) do |seed|
       seed_ = seed / 2
       (seed != seed_).maybe([self - seed, seed_])
     end

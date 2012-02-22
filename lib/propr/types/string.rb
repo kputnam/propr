@@ -1,7 +1,19 @@
 class String
-  # @return [Enumerator<String>]
+  # @return [Array<String>]
   def shrink
-    Enumerator.unfold(self) do |seed|
+    case size
+    when 0 then []
+    when 1
+      shrunken = []
+      shrunken << downcase if self =~ /[[:upper:]]/
+      shrunken << " " if self > " "
+      shrunken << "a" if self > "a"
+      shrunken << "A" if self > "A"
+      shrunken << "0" if self > "0"
+      shrunken << ""
+      shrunken
+    else
+      split(//).shrink.map(&:join)
     end
   end
 end
