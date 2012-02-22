@@ -1,12 +1,13 @@
 module Propr
-  autoload :Characters,     "propr/characters"
   autoload :Property,       "propr/property"
   autoload :Random,         "propr/random"
-  autoload :Base,           "propr/base"
+  autoload :Maybe,          "propr/maybe"
+  autoload :Some,           "propr/maybe"
+  autoload :None,           "propr/maybe"
   autoload :RSpec,          "propr/rspec"
   autoload :RSpecProperty,  "propr/rspec"
-  autoload :TestUnit,       "propr/testunit"
 
+  # Monkey patches
   require "propr/util"
   require "propr/types"
 

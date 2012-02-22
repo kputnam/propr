@@ -1,0 +1,23 @@
+require "spec_helper"
+
+describe Propr::Maybe, "#shrink" do
+
+  specify { Propr::None.shrink.empty? }
+
+  property("has some") do |o|
+    os = true.maybe(o).shrink
+    so = true.maybe(o.shrink)
+    os - [Propr::None] == [so]
+  end
+  .check { Integer.random }
+  .check { String.random }
+
+  property("has none") do |o|
+    os = true.maybe(o).shrink
+    so = true.maybe(o.shrink)
+    os - [so] == [Propr::None]
+  end
+  .check { Integer.random }
+  .check { String.random }
+
+end
