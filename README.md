@@ -118,7 +118,7 @@ arguments.
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
-times `p` should be run.
+examples `p` should be tested against.
 
 ## Using Propr + Test Frameworks
 
@@ -129,11 +129,11 @@ you can use it to generate test cases.
 describe "foo" do
   include Propr::RSpec
 
-  # This defines four test cases, one per each `check`
+  # This defines three test cases, one per each `check`
   property("length"){|a| a.length >= 0 }
     check("abc").
     check("xyz").
-    check{ String.random }.
+    check{ String.random }
 end
 ```
 
@@ -297,22 +297,35 @@ Create a 4-element array of 4-character strings
 
 ## Guards
 
-Throws Propr::GuardFailure
+Many properties have some kind of precondition, like the property holds
+for all even numbers, but we're not interested on checking the property
+on odd numbers. We can specify these quickly using `guard`:
+
+The `guard` method throws an exception if the condition isn't satisfied,
+and normally the caller knows to retry sum fixed number of times before
+finally giving up.
 
     >> guard(111, &:even?)
-
-Throws Propr::GuardFailure
+    Propr::GuardFailure
+      from ...
+      from ...
 
     >> guard(false)
+    Propr::GuardFailure
+      from ...
+      from ...
 
-Returns `112`
+If the property holds, the original value is simply returned.
 
     >> guard(112, &:even?)
     => 112
 
-Returns `"abc"`
-    >> guard("abc")
-    => "abc"
+    >> guard(0 < 10)
+    => true
+
+## More Reading
+
+* [Presentation at KC Ruby Meetup Group](https://github.com/kputnam/presentations/raw/master/Property-Based-Testing.pdf)
 
 ## Related Projects
 
