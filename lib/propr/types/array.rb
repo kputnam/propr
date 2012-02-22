@@ -8,6 +8,10 @@ class Array
   end
 
   def shrink
+    if empty?
+      return []
+    end
+
     combination(size - 1).to_a.tap do |shrunken|
       shrunken << []
       size.times do |n|
