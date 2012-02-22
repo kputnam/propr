@@ -3,7 +3,7 @@ class Array
     if empty?
       raise "no elements"
     else
-      self[Integer.random(min: 0, max: length - 1)]
+      self[Integer.random(min: 0, max: size - 1)]
     end
   end
 
