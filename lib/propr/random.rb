@@ -9,6 +9,18 @@ module Propr
       Property.new(name, new, body)
     end
 
+    def self.generate(&body)
+      instance = new
+      retries  = 500
+
+      begin
+        instance.instance_exec(&body)
+      rescue => e
+        retry if e.is_a?(GuardFailure) and (retries -= 1) > 0
+        raise e
+      end
+    end
+
     # Throw a GuardFailure if predicate is not satisfied, or return the
     # given value. When no predicate is given, throws GuardFailure if
     # the given value is not truthy.
@@ -25,6 +37,10 @@ module Propr
     end
 
     def fails?(type = Exception)
+      unless block_given?
+        raise ArgumentError, "no block given (fails?)"
+      end
+
       begin
         yield
         false
