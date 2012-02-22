@@ -1,0 +1,7 @@
+require "spec_helper"
+
+describe Set, "#shrink" do
+
+  property("self"){|x| not n.shrink.member?(x) }
+
+end

@@ -1,0 +1,7 @@
+require "spec_helper"
+
+describe Hash, "#shrink" do
+
+  property("self"){|x| not x.shrink.member?(x) }
+
+end
