@@ -11,9 +11,42 @@ Priorities
 
 Specifics
 
-* Stateful random generation, infer when to reset state
-  * Re-consider sized values (magntitude,center) or range?
-  * Re-implement sized values (array, string, hash)
+* Organization of common properties
+
+    module ShrinkSpecs
+      def self
+        # must hold for all implementations
+        property("no value is smaller than itself"){|x| not x.shrink.member?(x) }
+      end
+    end
+
+    describe String, "#shrink" do
+      # property holds for all implementations
+      ShrinkSpecs.self
+        .check { String.random ... }
+
+      # property of the String#shrink implementation
+      property("empty"){|s| s.shrink.member?("") }
+        .check { String.random ... }
+
+      # property of the String#shrink implementation
+      property("shorter"){|s| s.shrink.all?{|x| x.length < s.length }}
+        .check { String.random ... }
+    end
+
+    describe Integer, "#shrink" do
+      # property holds for all implementations
+      ShrinkSpecs.self
+        .check { Integer.random ... }
+
+      # property of the Integer#shrink implementation
+      property("smaller"){|n| n.shrink.all?{|m| m.abs < n.abs }}
+        .check { Integer.random ... }
+    end
+
+* Stateful random generation
+  * Re-consider sized values (magntitude, center) or range?
+  * Re-implement sized values
 * Steal `collect` and `classify` from QuickCheck
 
     property("foo") { ... }
@@ -23,5 +56,5 @@ Specifics
     property("bar") { ... }
       check{|rand| rand.array.tap{|xs| collect xs.length }}
 
-* Shrink input with alt. algorithms: hill climbing, breadth first
+* Shrink input with breadth first
 * See also: smallcheck, deepcheck
