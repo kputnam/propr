@@ -1,0 +1,28 @@
+require "spec_helper"
+
+describe String, "#shrink" do
+
+  property("self"){|n| not n.shrink.member?(n) }
+    .check { Integer.random }
+
+  context "zero" do
+    property("empty"){|n| n.shrink.to_a.empty? }
+      .check(0)
+  end
+
+  context "non-zero" do
+    property("contains zero"){|n| n.shrink.member?(0) }
+      .check { guard(Integer.random, &:nonzero?) }
+  end
+
+  context "negative" do
+    property("greater than"){|n| n.shrink.all?{|m| m > n }}
+      .check { Integer.random(max: -1) }
+  end
+
+  context "positive" do
+    property("less than"){|n| n.shrink.all?{|m| m < n }}
+      .check { Integer.random(min: 1) }
+  end
+
+end

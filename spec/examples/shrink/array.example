@@ -1,0 +1,9 @@
+require "spec_helper"
+
+describe Array, "#shrink" do
+
+  property("self"){|x| not x.shrink.member?(x) }
+    .check { Array.random { String.random }}
+    .check { Array.random { Integer.random }}
+
+end
