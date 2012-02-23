@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Array, ".random" do
 
-  context "min and max" do
+  describe "min and max" do
     property("bounded"){|a,b| guard a <= b; Array.random(min: a, max: b) { "elem" }.length >= a }
       .check{ [Integer.random(min: -10, max: 10), Integer.random(min: 0, max: 20)] }
 
@@ -16,7 +16,7 @@ describe Array, ".random" do
       .check(Array.random(min: 1, max: 1) { nil })
   end
 
-  context "items" do
+  describe "items" do
     property("sequence"){|xs| xs.uniq.length == xs.length }
       .check{ x = 0; Array.random { x += 1 }}
 

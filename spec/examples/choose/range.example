@@ -1,0 +1,12 @@
+require "spec_helper"
+
+describe Range, "#random" do
+
+  property("empty") { fails? { Hash.new.random }}
+  # .check
+
+  property("member?"){|xs| guard(!xs.empty?); xs.member?(xs.random) }
+  # .check { Hash.random { [Integer.random, String.random] }}
+  # .check { Hash.random { [String.random, Integer.random] }}
+
+end
