@@ -1,0 +1,12 @@
+require "spec_helper"
+
+describe Array, "#random" do
+
+  property("empty") { fails? { [].random }}
+    .check
+
+  property("member?"){|xs| guard(!xs.empty?); xs.member?(xs.random) }
+    .check { Array.random { Integer.random }}
+    .check { Array.random { String.random }}
+
+end

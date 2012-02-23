@@ -1,0 +1,12 @@
+require "spec_helper"
+
+describe Set, "#random" do
+
+  property("empty") { fails? { Set.new.random }}
+  # .check
+
+  property("member?"){|xs| guard(!xs.empty?); xs.member?(xs.random) }
+  # .check { Set.random { Integer.random }}
+  # .check { Set.random { String.random }}
+
+end
