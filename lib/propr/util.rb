@@ -32,3 +32,9 @@ class << Enumerator
     end
   end
 end
+
+class Range
+  def empty?
+    (first == last and exclude_end?) or first > last
+  end
+end
