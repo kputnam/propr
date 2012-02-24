@@ -3,6 +3,24 @@ module Propr
   class Maybe
   end
 
+  class << Maybe
+    def run(computation)
+      computation
+    end
+
+    def unit(value)
+      Some.new(value)
+    end
+
+    def bind(f, &g)
+      f.fold(f, &g)
+    end
+
+    def fail(reason)
+      None
+    end
+  end
+
   class Some < Maybe
     def initialize(value)
       @value = value
