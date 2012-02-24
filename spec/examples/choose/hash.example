@@ -5,7 +5,7 @@ describe Hash, "#random" do
   property("empty") { fails? { Hash.new.random }}
   # .check
 
-  property("member?"){|xs| guard(!xs.empty?); xs.member?(xs.random) }
+  property("member?"){|xs| guard(!xs.empty?); k, v = xs.random; xs.member?(k) }
   # .check { Hash.random { [Integer.random, String.random] }}
   # .check { Hash.random { [String.random, Integer.random] }}
 
