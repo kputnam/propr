@@ -2,11 +2,12 @@ require "spec_helper"
 
 describe Range, "#random" do
 
-  property("empty") { fails? { Hash.new.random }}
-  # .check
+  property("empty") {|x| fails? { (x...x).random }}
+  # .check { Integer.random }
+  # .check { String.random }
 
   property("member?"){|xs| guard(!xs.empty?); xs.member?(xs.random) }
-  # .check { Hash.random { [Integer.random, String.random] }}
-  # .check { Hash.random { [String.random, Integer.random] }}
+  # .check { Range.random(min: Integer.random, max: Integer.random) }
+  # .check { Range.random(min: String.random, max: String.random) }
 
 end
