@@ -16,8 +16,10 @@ class << Integer
   def random(options = {})
     min = options[:min] || INTMIN
     max = options[:max] || INTMAX
+
     raise ArgumentError,
       "min > max" if min > max
+
     rand(max + 1 - min) + min
   end
 end
