@@ -9,17 +9,22 @@ class Integer
 end
 
 class << Integer
-  INTMAX = 2 ** (0.size * 8 - 2) - 1
-  INTMIN = -INTMAX + 1
+  MAX = 2 ** (0.size * 8 - 2) - 1
+  MIN = -MAX + 1
 
-  # @return [Integer]
-  def random(options = {})
-    min = options[:min] || INTMIN
-    max = options[:max] || INTMAX
+  def random(options = {}, m = Propr::Random)
+    min = (options[:min] || MIN).to_i
+    max = (options[:max] || MAX).to_i
 
     raise ArgumentError,
       "min > max" if min > max
 
-    rand(max + 1 - min) + min
+    mid = min + (max - min).div(2)
+    rnd = min + rand(max + 1 - min)
+
+    m.bind(m.scale(rnd, mid)) do |n|
+      # Round up or down toward mid
+      m.unit(n > mid ? n.floor : n.ceil)
+    end
   end
 end
