@@ -1,12 +1,6 @@
 module Propr
 
   class State
-    attr_reader :state
-    attr_reader :value
-
-    def initialize(state, value)
-      @state, @value = state, value
-    end
   end
 
   class << State
@@ -19,11 +13,11 @@ module Propr
     end
 
     def eval(computation, state)
-      computation.call(state).value
+      computation.call(state)[:value]
     end
 
     def exec(computation, state)
-      computation.call(state).state
+      computation.call(state)[:state]
     end
 
     # Combinators
@@ -31,14 +25,14 @@ module Propr
 
     def unit(value)
       lambda do |state|
-        new(state, value)
+        Hash[state: state, value: value]
       end
     end
 
     def bind(f, &g)
       lambda do |state|
-        wrapper = f.call(state)
-        g.call(wrapper.value).call(wrapper.state)
+        result = f.call(state)
+        g.call(result[:value]).call(result[:state])
       end
     end
 
@@ -47,13 +41,13 @@ module Propr
 
     def put(n)
       lambda do |state|
-        new(n, nil)
+        Hash[state: n, value: nil]
       end
     end
 
     def get
       lambda do |state|
-        new(state, state)
+        Hash[state: state, value: state]
       end
     end
 
