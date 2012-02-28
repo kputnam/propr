@@ -9,11 +9,11 @@ module Propr
     # Evaluators
     #############################################
 
-    def run(computation, scale)
+    def run(computation, scale = 1.0)
       computation.call(scale)
     end
 
-    def eval(computation, scale)
+    def eval(computation, scale = 1.0)
       computation.call(scale)[0]
     end
 
@@ -44,9 +44,11 @@ module Propr
 
     def scale(number, zero = nil)
       if zero.nil?
-        # Set scale factor
+        # Set scale factor 0..1
         lambda do |scale|
-          [nil, scale]
+          scale = 1.0 if scale > 1.0
+          scale = 0.0 if scale < 0.0
+          [nil, scale.to_f]
         end
       else
         # Scale given number towards zero
