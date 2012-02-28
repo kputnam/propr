@@ -46,11 +46,15 @@ class << String
   end
 
   # @return [String]
-  def random(options = {})
+  def random(options = {}, m = Propr::Random)
     min     = options.fetch(:min, 0)
     max     = options.fetch(:max, 10)
-    size    = Integer.random(min: min, max: max)
     charset = Characters.of(options.fetch(:charset, :print))
-    size.times.map{|_| charset.random }.join
+
+    m.bind(Integer.random(min: min, max: max, center: min)) do |size|
+      m.bind(m.sequence(size.times.map{|_| charset.random })) do |chars|
+        m.unit(chars.join)
+      end
+    end
   end
 end

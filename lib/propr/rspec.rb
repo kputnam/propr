@@ -21,8 +21,11 @@ module Propr
           begin
             remaining.times do |n|
               input = property.rand.instance_exec(&block)
+              input = Propr::Random.eval(input, (249 - remaining)/250.0)
+
               property.call(input) \
                 or property.error("Falsifiable after #{250 - remaining} tests", location)
+
               remaining -= 1
             end
           rescue => e

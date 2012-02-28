@@ -13,6 +13,10 @@ module Propr
       computation.call(scale)
     end
 
+    def eval(computation, scale)
+      computation.call(scale)[0]
+    end
+
     # Combinators
     #############################################
 
