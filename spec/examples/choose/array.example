@@ -5,7 +5,7 @@ describe Array, "#random" do
   property("empty") { fails? { [].random }}
     .check
 
-  mproperty("member?"){|xs| guard(!xs.empty?); bind(xs.random){|x| unit(xs.member?(x)) }}
+  property("member?"){|xs| bind(guard(!xs.empty?)) { bind(xs.random){|x| unit(xs.member?(x)) }}}
     .check { Array.random { Integer.random }}
     .check { Array.random { String.random }}
 
