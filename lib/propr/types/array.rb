@@ -1,11 +1,11 @@
 class Array
-  def random(m = Propr::Random)
-    if empty?
-      m.fail "no elements"
-    else
-      m.bind(Integer.random(min: 0, max: size - 1, center: 0)) do |index|
-        m.unit(self[index])
-      end
+  def random(options = {}, m = Propr::Random)
+    options = {center: 0}
+      .merge(options)
+      .merge(min: 0, max: size - 1)
+
+    m.bind(Integer.random(options)) do |index|
+      m.unit(self[index])
     end
   end
 

@@ -1,6 +1,6 @@
 class Range
-  def random
-    min.class.random(min: min, max: max)
+  def random(options = {})
+    min.class.random(options.merge(min: min, max: max))
   end
 end
 
