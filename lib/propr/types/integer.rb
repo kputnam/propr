@@ -19,7 +19,6 @@ class << Integer
     raise ArgumentError,
       "min > max" if min > max
 
-    value  = min + rand(max + 1 - min)
     center = options.fetch(:center, :mid)
     center =
       case center
@@ -36,9 +35,11 @@ class << Integer
         "center must be :min, :mid, :max, or min <= Integer <= max"
       end
 
-    m.bind(m.scale(value, center)) do |n|
-      # Round up or down toward center
-      m.unit(n > center ? n.floor : n.ceil)
+    m.bind(m.rand(max + 1 - min)) do |rnd|
+      m.bind(m.scale(rnd + min, center)) do |n|
+        # Round up or down to integer nearest center
+        m.unit(n > center ? n.floor : n.ceil)
+      end
     end
   end
 end

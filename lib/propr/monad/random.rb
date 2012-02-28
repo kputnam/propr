@@ -52,5 +52,11 @@ module Propr
       end
     end
 
+    def rand(limit = nil)
+      lambda do |scale|
+        [Kernel.rand(limit), scale]
+      end
+    end
+
   end
 end
