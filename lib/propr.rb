@@ -15,18 +15,15 @@ module Propr
 
   class NoMoreTries < StandardError
     # @return [Integer]
-    attr_reader :limit
-
-    # @return [Integer]
     attr_reader :tries
 
-    def initialize(limit, tries)
-      @limit, @tries = limit, tries
+    def initialize(tries)
+      @tries = tries
     end
 
     # @return [String]
     def to_s
-      "Exceeded limit #{limit}: #{tries} failed guards"
+      "Exceeded #{@tries} failed guards"
     end
   end
 
