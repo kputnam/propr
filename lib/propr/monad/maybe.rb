@@ -1,5 +1,9 @@
 module Propr
 
+  class Maybe
+    include Monad
+  end
+
   class << Maybe
 
     # Evaluators
