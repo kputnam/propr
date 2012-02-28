@@ -1,8 +1,8 @@
 module Propr
 
   class RSpecProperty < Property
-    def initialize(group, name, options, rand, body)
-      super(name, rand, body)
+    def initialize(group, name, options, body)
+      super(name, body)
 
       @options, @group =
         options, group
@@ -11,17 +11,23 @@ module Propr
     def check(*input, &block)
       # This is to work around RSpec's magic dynamic scoping
       property = self
+      checkdsl = CheckDsl.new
       location = location(block || caller)
       retries  = 500
 
       if block_given?
         remaining = 250
+        attempts  = 0
 
         @group.example(@name, @options.merge(caller: location)) do
           begin
             remaining.times do |n|
-              input = property.rand.instance_exec(&block)
-              input = Propr::Random.eval(input, (249 - remaining)/250.0)
+              attempts += 1
+
+            # input = property.checkdsl.instance_exec(&block)
+            # input = property.checkdsl.eval(input, attempts/250.0)
+              input = checkdsl.instance_exec(&block)
+              input = checkdsl.eval(input, attempts / 250.0)
 
               property.call(input) \
                 or property.error("Falsifiable after #{250 - remaining} tests", location)
@@ -81,5 +87,5 @@ module Propr
 
   # Constants and methods live in separate namespaces, so this
   # is one way to memoize the method with a default arg (Random).
-  RSpec = RSpec(Random.new)
+  RSpec = RSpec(CheckDsl.new, PropDsl.new)
 end
