@@ -1,8 +1,7 @@
 module Propr
   autoload :Property,       "propr/property"
-  autoload :Maybe,          "propr/maybe"
-  autoload :Some,           "propr/maybe"
-  autoload :None,           "propr/maybe"
+  autoload :PropDsl,        "propr/propdsl"
+  autoload :CheckDsl,       "propr/checkdsl"
   autoload :RSpec,          "propr/rspec"
   autoload :RSpecProperty,  "propr/rspec"
 
@@ -31,13 +30,17 @@ module Propr
     end
   end
 
-  def self.RSpec(rand)
+  def self.RSpec(checkdsl, propdsl)
     Module.new.tap do |m|
       m.send(:define_method, :property) { raise }
       m.send(:define_singleton_method, :rand) { rand }
       m.send(:define_singleton_method, :included) do |scope|
         scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, rand, body)
+          RSpecProperty.new(self, name, options, lambda {|*args| propdsl.instance_exec(*args, &body) })
+        end
+
+        scope.send(:define_singleton_method, :mproperty) do |name, options = {}, &body|
+          RSpecProperty.new(self, name, options, lambda {|*args| Random.eval(propdsl.instance_exec(*args, &body)) })
         end
       end
     end
