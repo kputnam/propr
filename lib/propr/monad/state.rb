@@ -52,5 +52,11 @@ module Propr
       end
     end
 
+    def update
+      lambda do |state|
+        Hash[state: yield(state), value: nil]
+      end
+    end
+
   end
 end
