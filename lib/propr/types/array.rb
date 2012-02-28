@@ -25,10 +25,13 @@ class Array
 end
 
 class << Array
-  def random(options = {}, &block)
+  def random(options = {}, m = Propr::Random, &block)
     min  = options[:min] || 0
     max  = options[:max] || 10
-    size = Integer.random(min: min, max: max)
-    size.times.map { block.call }
+
+    # @todo: Don't scale size around midpoint
+    m.bind(Integer.random(min: min, max: max)) do |size|
+      m.sequence(size.times.map { block.call })
+    end
   end
 end
