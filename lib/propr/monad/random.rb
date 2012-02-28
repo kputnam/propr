@@ -1,12 +1,14 @@
 module Propr
+
   class Random
+    include Monad
   end
 
   class << Random
 
     # Evaluators
     #############################################
-    
+
     def run(computation, scale)
       computation.call(scale)
     end

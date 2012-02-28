@@ -27,7 +27,7 @@ module Propr
     def shrink
       [None, Some.new(@value.shrink)]
     end
-    
+
     def ==(other)
       Maybe === other and other.fold(false){|x| x == @value }
     end

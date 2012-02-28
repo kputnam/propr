@@ -9,7 +9,7 @@ module Propr
   # Monkey patches
   require "propr/util"
   require "propr/types"
-  require "propr/monads"
+  require "propr/monad"
 
   class GuardFailure < StandardError
   end

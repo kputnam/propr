@@ -1,6 +1,7 @@
 module Propr
 
   class State
+    include Monad
   end
 
   class << State
