@@ -24,10 +24,26 @@ class << Float
     int  = rand(max_.to_i - min_.to_i)
 
     # Take care to prevent Float overflow
-    rnd  = BigDecimal(int.to_s) + BigDecimal(min_.to_s)
-    rnd += rand
+    value  = BigDecimal(int.to_s) + BigDecimal(min_.to_s)
+    value += rand
+
+    center = options.fetch(:center, :mid)
+    center =
+      case center
+      when :mid then min + (max - min).div(2)
+      when :min then min
+      when :max then max
+      when Numeric
+        raise ArgumentError,
+          "center < min" if center < min
+        raise ArgumentError,
+          "center > max" if center > max
+        center
+      else raise ArgumentError,
+        "center must be :min, :mid, :max, or min <= Integer <= max"
+      end
 
     # @todo: -Float::INFINITY, +Float::INFINITY, -0.0, Float::NAN
-    m.scale(rnd, mid)
+    m.scale(value, center)
   end
 end

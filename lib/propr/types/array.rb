@@ -29,8 +29,7 @@ class << Array
     min  = options[:min] || 0
     max  = options[:max] || 10
 
-    # @todo: Don't scale size around midpoint
-    m.bind(Integer.random(min: min, max: max)) do |size|
+    m.bind(Integer.random(min: min, max: max, center: min)) do |size|
       m.sequence(size.times.map { block.call })
     end
   end
