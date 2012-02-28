@@ -1,9 +1,11 @@
 class Array
-  def random
+  def random(m = Propr::Random)
     if empty?
-      raise "no elements"
+      m.fail "no elements"
     else
-      self[Integer.random(min: 0, max: size - 1)]
+      m.bind(Integer.random(min: 0, max: size - 1, center: 0)) do |index|
+        m.unit(self[index])
+      end
     end
   end
 
@@ -25,12 +27,12 @@ class Array
 end
 
 class << Array
-  def random(options = {}, m = Propr::Random, &block)
+  def random(options = {}, m = Propr::Random)
     min  = options[:min] || 0
     max  = options[:max] || 10
 
     m.bind(Integer.random(min: min, max: max, center: min)) do |size|
-      m.sequence(size.times.map { block.call })
+      m.sequence(size.times.map { yield })
     end
   end
 end
