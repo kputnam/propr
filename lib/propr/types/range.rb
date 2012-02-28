@@ -5,25 +5,26 @@ class Range
 end
 
 class << Range
-  def random(options = {})
-    a, b =
+  def random(options = {}, m = Propr::Random)
+    random =
       if block_given?
-        [yield, yield]
+        yield
       else
         min = options[:min]
         max = options[:max]
-
         min or max or raise ArgumentError,
           "must provide min, max, or block"
-
-        [(min or max).class.random(min: min, max: max),
-         (min or max).class.random(min: min, max: max)]
+        (min or max).class.random(options)
       end
 
-    if options.fetch(:inclusive?, rand > 0.5)
-      a..b
-    else
-      a...b
+    m.bind(random) do |a|
+      m.bind(random) do |b|
+        if options.fetch(:inclusive?, rand > 0.5)
+          m.unit(a..b)
+        else
+          m.unit(a...b)
+        end
+      end
     end
   end
 end
