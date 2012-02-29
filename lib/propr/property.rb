@@ -10,15 +10,11 @@ module Propr
     end
 
     # @return [Boolean]
-    def check(*args, &block)
+    def check(*args)
       if block_given?
-        100.times.all? do
-          args = CheckDsl.instance_exec(&block)
-        # @propdsl.instance_exec(*args, &@body)
-          @body.call(*args)
-        end
+        count = args.first || 100
+        count.times.all? { true == @body.call(*yield) }
       else
-      # @propdsl.instance_exec(*args, &@body)
         @body.call(*args)
       end
     end
@@ -28,12 +24,10 @@ module Propr
     end
 
     def call(*args, &block)
-    # @propdsl.instance_exec(*args, &@body)
       @body.call(*args)
     end
 
     def [](*args, &block)
-    # @propdsl.instance_exec(*args, &@body)
       @body.call(*args)
     end
 
