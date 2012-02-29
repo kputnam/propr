@@ -5,10 +5,13 @@ class Set
     end
   end
 
+  # @return [Array<Set>]
   def shrink
+    return Array.new if empty?
+
     array = to_a
     array.combination(size - 1).map(&:to_set).tap do |shrunken|
-      shrunken << [].to_set
+      shrunken << Set.new
 
       size.times do |n|
         head = array[0, n]
