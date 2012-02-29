@@ -4,6 +4,23 @@ class Hash
       m.unit([k, self[k]])
     end
   end
+
+  # @return [Array<Hash>]
+  def shrink
+    return Array.new if empty?
+
+    array = to_a
+    array.combination(size - 1).map{|pairs| Hash[pairs] }.tap do |shrunken|
+      shrunken << Hash.new
+
+      size.times do |n|
+        head = array[0, n]
+        tail = array[n+1..-1]
+        k, v = array[n]
+        shrunken.concat(v.shrink.map{|m| Hash[head + [[k, m]] + tail] })
+      end
+    end
+  end
 end
 
 class << Hash
@@ -14,13 +31,13 @@ class << Hash
   #   end
   #
   def random(options = {}, m = Propr::Random)
-    min  = options[:min] || 0
-    max  = options[:max] || 10
+    min = options[:min] || 0
+    max = options[:max] || 10
 
     # @todo: Be sure we created enough *unique* keys
     #
     #   Hash.random(min: 10) do
-    #     # key space has only 6 elements
+    #     # key space could have at most 6 elements
     #     m.sequence([Integer.random(min: 0, max: 5), String.random])
     #   end
     #
