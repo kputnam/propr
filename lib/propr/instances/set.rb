@@ -1,10 +1,6 @@
 class Set
   def random(options = {}, m = Propr::Random)
-    options = {center: 0}
-      .merge(options)
-      .merge(min: 0, max: size - 1)
-
-    m.bind(Integer.random(options)) do |index|
+    m.bind(m.rand(size)) do |index|
       m.unit(self.to_a[index])
     end
   end

@@ -1,6 +1,7 @@
 class Range
   def random(options = {})
     # @todo: This won't work for some types, e.g. String.
+    # @todo: Should this be skewed/scaled?
     min.class.random(options.merge(min: min, max: max))
   end
 end
