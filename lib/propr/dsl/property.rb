@@ -28,9 +28,15 @@ module Propr
         end
       end
 
-      def guard(value)
-        raise GuardFailure,
-          "guard failed" unless value
+      def guard(*conditions)
+        if index = conditions.index{|x| not x }
+          raise GuardFailure,
+            "guard condition #{index} was false"
+        end
+      end
+
+      def label(value)
+        # @todo
       end
 
     private
