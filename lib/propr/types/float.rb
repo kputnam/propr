@@ -22,9 +22,14 @@ class << Float
     center = options.fetch(:center, :mid)
     center =
       case center
-      when :mid then min_ + (max_ - min_).div(2)
       when :min then min
       when :max then max
+      when :mid
+        if (max_ - min_).finite?
+          min_ + (max_ - min_).fdiv(2)
+        else
+          (min_ + max_).fdiv(2)
+        end
       when Numeric
         raise ArgumentError,
           "center < min" if center < min
