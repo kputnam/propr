@@ -1,5 +1,6 @@
 class Range
   def random(options = {})
+    # @todo: This won't work for some types, e.g. String.
     min.class.random(options.merge(min: min, max: max))
   end
 end

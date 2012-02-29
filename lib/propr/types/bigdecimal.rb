@@ -1,9 +1,9 @@
 require "bigdecimal"
 
 class BigDecimal
-  # @return [Enumerator<BigDecimal>]
+  # @return [Array<BigDecimal>]
   def shrink
-    Enumerator.unfold(self) do |seed|
+    Array.unfold(self) do |seed|
       seed_ = seed / 2
       ((seed - seed_).abs > Float::MIN).maybe([self - seed, seed_])
     end
@@ -11,8 +11,8 @@ class BigDecimal
 end
 
 class << BigDecimal
-  INF = BigDecimal('Infinity')
-  NAN = BigDecimal('NaN')
+  INF = BigDecimal("Infinity")
+  NAN = BigDecimal("NaN")
 
   # @return [BigDecimal]
   def random(options = {}, m = Propr::Random)
