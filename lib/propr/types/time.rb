@@ -7,8 +7,11 @@ class << Time
   MAX = Time.at(253402300799) # 9999-12-31 23:59:59 UTC
 
   def random(options = {})
-    min = options[:min] || MIN
-    max = options[:max] || MAX
-    at(Float.random(min: min.to_f, max: max.to_f))
+    min = (options[:min] || MIN).to_f
+    max = (options[:max] || MAX).to_f
+
+    m.bind(Float.random(options.merge(min: min, max: max))) do |ms|
+      m.unit(at(ms))
+    end
   end
 end
