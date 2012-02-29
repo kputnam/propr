@@ -1,6 +1,5 @@
 class Hash
   def random(m = Propr::Random)
-    # @todo: Shouldn't skew key selection with scale
     m.bind(keys.random) do |k|
       m.unit([k, self[k]])
     end
