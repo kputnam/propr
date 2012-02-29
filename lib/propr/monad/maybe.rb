@@ -89,3 +89,15 @@ module Propr
   None = None_.new
 
 end
+
+class TrueClass
+  def maybe(value)
+    Propr::Some.new(value)
+  end
+end
+
+class FalseClass
+  def maybe(value)
+    Propr::None
+  end
+end

@@ -1,12 +1,12 @@
 class Array
   def random(options = {}, m = Propr::Random)
-    # @todo: Probably shouldn't scale/skew selection here, as
-    # this causes problems with String.random: at small scale
-    # we get short strings with only one part of the alphabet
     options = {center: 0}
       .merge(options)
       .merge(min: 0, max: size - 1)
 
+    # @todo: Probably shouldn't scale/skew selection here, as
+    # this causes problems with String.random: at small scale
+    # we get short strings with only one part of the alphabet
     m.bind(Integer.random(options)) do |index|
       m.unit(self[index])
     end

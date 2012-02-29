@@ -22,13 +22,12 @@ class << BigDecimal
     min_ = if min.finite? then min else BigDecimal(-Float::MAX.to_s) end
     max_ = if max.finite? then max else BigDecimal( Float::MAX.to_s) end
 
-    # @todo: -INF, +INF, -0.0, NAN
     center = options.fetch(:center, :mid)
     center =
       case center
       when :mid then min_ + (max_ - min_).div(2)
-      when :min then min
-      when :max then max
+      when :min then min_
+      when :max then max_
       when Numeric
         raise ArgumentError,
           "center < min" if center < min
@@ -40,7 +39,6 @@ class << BigDecimal
       end
 
     # @todo: -INF, +INF, -0.0, NAN
-
     m.bind(m.rand(max_ - min_)) do |a|
       m.bind(m.rand(max_ - min_)) do |b|
         c  = BigDecimal(a) + BigDecimal(min_.to_s)
