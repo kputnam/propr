@@ -1,7 +1,6 @@
 module Propr
   autoload :Property,       "propr/property"
-  autoload :PropDsl,        "propr/propdsl"
-  autoload :CheckDsl,       "propr/checkdsl"
+  autoload :Dsl,            "propr/dsl"
   autoload :RSpec,          "propr/rspec"
   autoload :RSpecProperty,  "propr/rspec"
 

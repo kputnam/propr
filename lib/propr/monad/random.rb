@@ -9,8 +9,13 @@ module Propr
     # Evaluators
     #############################################
 
-    def run(computation, scale = BigDecimal(1))
-      computation.call(scale)
+    def run(computation, scale = BigDecimal(1), retries = 0)
+      while true
+        value, scale, success = computation.call(scale)
+        if success || (retries -= 1) < 0
+          return [value, scale, success]
+        end
+      end
     end
 
     def eval(computation, scale = BigDecimal(1), retries = 0)
