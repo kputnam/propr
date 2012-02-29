@@ -1,79 +1,46 @@
 module Propr
 
-  class RSpecProperty < Property
-    def initialize(group, name, options, body)
-      super(name, body)
+  class RSpecAdapter
+    def initialize(group, options, property)
+      @options, @group, @property =
+        options, group, property
 
-      @options, @group =
-        options, group
+      @runner = Runner.new(100, 50, lambda{|p,s,*_| BigDecimal(p + s) / 100 })
     end
 
-    def check(*input, &block)
-      # This is to work around RSpec's magic dynamic scoping
-      property = self
-      checkdsl = CheckDsl.new
-      location = location(block || caller)
-      retries  = 500
+    def check(*args, &generator)
+      runner   = @runner
+      property = @property
 
       if block_given?
-        remaining = 250
-        attempts  = 0
+        @group.example(@property.name, @options) do #.merge(caller: location)) do
+          success, passed, skipped, counterex =
+            runner.run(property, generator)
 
-        @group.example(@name, @options.merge(caller: location)) do
-          begin
-            remaining.times do |n|
-              attempts += 1
-
-            # input = property.checkdsl.instance_exec(&block)
-            # input = property.checkdsl.eval(input, attempts/250.0)
-              input = checkdsl.instance_exec(&block)
-              input = checkdsl.eval(input, attempts / 250.0)
-
-              property.call(input) \
-                or property.error("Falsifiable after #{250 - remaining} tests", location)
-
-              remaining -= 1
+          unless success
+            if skipped >= runner.maxskip
+              raise NoMoreTries.new(runner.maxskip)
+            else
+              raise Falsifiable.new(counterex, passed, skipped)
             end
-          rescue => e
-            retry if e.is_a?(GuardFailure) and (retries -= 1) > 0
-            e = e.class.new "(no message)" if e.message.frozen?
-            e.message << "\n    with: #{property.withfmt(input)}"
-            e.message << "\n    seed: #{srand}"
-            raise e
           end
         end
       else
-        @group.example(@name, @options.merge(caller: location)) do
-          begin
-            property.call(*input) \
-              or property.error("Falsifiable", location)
-          rescue => e
-            retry if e.is_a?(GuardFailure) and (retries -= 1) > 0
-            e = e.class.new "(no message)" if e.message.frozen?
-            e.message << "\n    with: #{property.withfmt(input)}"
-            e.message << "\n    seed: #{srand}"
-            raise e
-          end
+        @group.example(@property.name, @options) do #.merge(caller: location)) do
+          property.call(*args)
         end
       end
 
+      # Return `self` so users can chain calls to `check`
       self
     end
+
+  private
 
     def error(message, location)
       raise ::RSpec::Expectations::ExpectationNotMetError,
         message, location
     end
-
-    def withfmt(input)
-      if @body.arity == 1
-        input.inspect
-      else
-        input.map(&:inspect).join(", ")
-      end
-    end
-
-  private
 
     def location(data)
       case data
@@ -85,7 +52,4 @@ module Propr
     end
   end
 
-  # Constants and methods live in separate namespaces, so this
-  # is one way to memoize the method with a default arg (Random).
-  RSpec = RSpec(CheckDsl.new, PropDsl.new)
 end

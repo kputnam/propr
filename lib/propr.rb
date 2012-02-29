@@ -1,8 +1,9 @@
 module Propr
-  autoload :Property,       "propr/property"
-  autoload :Dsl,            "propr/dsl"
-  autoload :RSpec,          "propr/rspec"
-  autoload :RSpecProperty,  "propr/rspec"
+  autoload :Property,     "propr/property"
+  autoload :Dsl,          "propr/dsl"
+  autoload :Runner,       "propr/runner"
+  autoload :RSpec,        "propr/rspec"
+  autoload :RSpecAdapter, "propr/rspec"
 
   # Monkey patches
   require "propr/unfold"
@@ -10,6 +11,20 @@ module Propr
   require "propr/instances"
 
   class GuardFailure < StandardError
+  end
+
+  class Falsifiable < StandardError
+    attr_reader :counterex, :passed, :skipped
+
+    def initialize(counterex, passed, skipped)
+      @counterex, @passed, @skipped =
+        counterex, passed, skipped
+    end
+
+    def to_s
+      "input: #{@counterex.inspect}\n" +
+      "after: #{@passed} passed, #{@skipped} skipped\n"
+    end
   end
 
   class NoMoreTries < StandardError
@@ -31,14 +46,16 @@ module Propr
       m.send(:define_method, :property) { raise }
       m.send(:define_singleton_method, :rand) { rand }
       m.send(:define_singleton_method, :included) do |scope|
-        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, lambda {|*args| Dsl::Check.instance_exec(*args, &body) })
-        end
 
-        scope.send(:define_singleton_method, :mproperty) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, lambda {|*args| Random.eval(Dsl::Check.instance_exec(*args, &body)) })
+        # @todo: raise an error if body isn't given
+        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
+          q = Dsl::Property.wrap(body)
+          p = Property.new(name, q)
+          RSpecAdapter.new(self, options, p)
         end
       end
     end
   end
+
+  RSpec = RSpec(nil, nil)
 end

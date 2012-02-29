@@ -9,20 +9,21 @@ module Propr
     # Evaluators
     #############################################
 
-    def run(computation, scale = BigDecimal(1), retries = 0)
-      while true
-        value, scale, success = computation.call(scale)
-        if success || (retries -= 1) < 0
-          return [value, scale, success]
-        end
-      end
+    def run(computation, scale = BigDecimal(1))
+      computation.call(scale)
     end
 
     def eval(computation, scale = BigDecimal(1), retries = 0)
+      skipped = 0
+
       while true
-        value, scale, success = computation.call(scale)
-        return value if success
-        raise NoMoreTries, "unknown" if (retries -= 1) < 0
+        value, _, success = computation.call(scale)
+
+        if success
+          return value
+        elsif (skipped += 1) > retries
+          raise NoMoreTries, retries
+        end
       end
     end
 
