@@ -6,9 +6,9 @@ module Propr
   autoload :RSpecProperty,  "propr/rspec"
 
   # Monkey patches
-  require "propr/util"
-  require "propr/types"
+  require "propr/unfold"
   require "propr/monad"
+  require "propr/instances"
 
   class GuardFailure < StandardError
   end
@@ -33,11 +33,11 @@ module Propr
       m.send(:define_singleton_method, :rand) { rand }
       m.send(:define_singleton_method, :included) do |scope|
         scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, lambda {|*args| propdsl.instance_exec(*args, &body) })
+          RSpecProperty.new(self, name, options, lambda {|*args| Dsl::Check.instance_exec(*args, &body) })
         end
 
         scope.send(:define_singleton_method, :mproperty) do |name, options = {}, &body|
-          RSpecProperty.new(self, name, options, lambda {|*args| Random.eval(propdsl.instance_exec(*args, &body)) })
+          RSpecProperty.new(self, name, options, lambda {|*args| Random.eval(Dsl::Check.instance_exec(*args, &body)) })
         end
       end
     end
