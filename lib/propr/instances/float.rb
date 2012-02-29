@@ -3,9 +3,10 @@ require "bigdecimal"
 class Float
   # @return [Enumerator<Float>]
   def shrink
-    Enumerator.unfold(self) do |seed|
-      seed_ = seed / 2
-      (seed != seed_).maybe([self - seed, seed_])
+    Array.unfold(self) do |seed|
+      zero  = 0
+      seed_ = zero + (seed - zero) / 2
+      (seed - seed_ > 1e-10).maybe([zero + self - seed, seed_])
     end
   end
 end

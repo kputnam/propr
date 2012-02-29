@@ -13,9 +13,7 @@ class Array
   end
 
   def shrink
-    if empty?
-      return []
-    end
+    return [] if empty?
 
     combination(size - 1).to_a.tap do |shrunken|
       shrunken << []
