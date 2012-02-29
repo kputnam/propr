@@ -1,20 +1,16 @@
-class TrueClass
-  def maybe(value)
-    Propr::Some.new(value)
-  end
-end
-
-class FalseClass
-  def maybe(value)
-    Propr::None
-  end
-end
-
 class << Array
   # @return [Array]
   def unfold(seed, &block)
     m = yield(seed)
     m.fold([]){|(item, seed)| [item] + unfold(seed, &block) }
+  end
+end
+
+class << Hash
+  # @return [Array]
+  def unfold(seed, &block)
+    m = yield(seed)
+    m.fold({}){|(k, v, seed)| unfold(seed, &block).update(k => v) }
   end
 end
 
@@ -30,11 +26,5 @@ class << Enumerator
         end || break
       end
     end
-  end
-end
-
-class Range
-  def empty?
-    (first == last and exclude_end?) or first > last
   end
 end

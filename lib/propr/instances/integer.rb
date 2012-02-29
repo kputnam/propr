@@ -2,8 +2,9 @@ class Integer
   # @return [Enumerator<Integer>]
   def shrink
     Array.unfold(self) do |seed|
-      seed_ = seed / 2
-      (seed != seed_).maybe([self - seed, seed_])
+      zero  = 0
+      seed_ = zero + (seed - zero) / 2
+      (seed != seed_).maybe([zero + self - seed, seed_])
     end
   end
 end
