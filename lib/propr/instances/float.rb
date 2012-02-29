@@ -1,12 +1,12 @@
 require "bigdecimal"
 
 class Float
-  # @return [Enumerator<Float>]
+  # @return [Array<Float>]
   def shrink
     Array.unfold(self) do |seed|
       zero  = 0
       seed_ = zero + (seed - zero) / 2
-      (seed - seed_ > 1e-10).maybe([zero + self - seed, seed_])
+      ((seed - seed_).abs > 1e-10).maybe([self + zero - seed, seed_])
     end
   end
 end
