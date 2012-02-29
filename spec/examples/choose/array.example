@@ -2,10 +2,10 @@ require "spec_helper"
 
 describe Array, "#random" do
 
-  property("empty") { fails? { [].random }}
+  property("empty") { error? { [].random }}
     .check
 
-  property("member?"){|xs| bind(guard(!xs.empty?)) { bind(xs.random){|x| unit(xs.member?(x)) }}}
+  property("member?"){|xs| guard(!xs.empty?); xs.member?(m.eval xs.random) }
     .check { Array.random { Integer.random }}
     .check { Array.random { String.random }}
 

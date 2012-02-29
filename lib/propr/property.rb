@@ -6,7 +6,7 @@ module Propr
 
     def initialize(name, body)
       @name, @body =
-        name, body || lambda {|*_| raise "no block given to property" }
+        name, body
     end
 
     # @return [Boolean]
@@ -15,7 +15,7 @@ module Propr
         count = args.first || 100
         count.times.all? { true == @body.call(*yield) }
       else
-        @body.call(*args)
+        true == @body.call(*args)
       end
     end
 

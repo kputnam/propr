@@ -6,7 +6,7 @@ describe Array, "#shrink" do
     .check { Array.random { String.random }}
     .check { Array.random { Integer.random }}
 
-  property("smaller"){|x| not x.shrink.find{|y| y.length > x.length }}
+  property("smaller"){|x| x.shrink.all?{|y| y.length <= x.length }}
     .check { Array.random { String.random }}
     .check { Array.random { Integer.random }}
 
