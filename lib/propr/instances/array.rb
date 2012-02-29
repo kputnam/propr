@@ -5,8 +5,9 @@ class Array
     end
   end
 
+  # @return [Array<Array>]
   def shrink
-    return [] if empty?
+    return Array.new if empty?
 
     combination(size - 1).to_a.tap do |shrunken|
       shrunken << []
