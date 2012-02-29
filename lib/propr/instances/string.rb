@@ -6,10 +6,10 @@ class String
     when 1
       shrunken = []
       shrunken << downcase if self =~ /[[:upper:]]/
-      shrunken << " " if self > " "
-      shrunken << "a" if self > "a"
-      shrunken << "A" if self > "A"
-      shrunken << "0" if self > "0"
+      shrunken << " " if self =~ /(?! )\s/
+      shrunken << "a" if self =~ /[b-z]/
+      shrunken << "A" if self =~ /[B-Z]/
+      shrunken << "0" if self =~ /[1-9]/
       shrunken << ""
       shrunken
     else
@@ -29,8 +29,8 @@ class << String
 
     CLASSES = Hash.new
     CLASSES.update \
-      :any    => ALL,
-      :ascii  => ASCII,
+      :any    => ALL.split(//),
+      :ascii  => ASCII.split(//),
       :alnum  => Characters.of(/[[:alnum:]]/),
       :alpha  => Characters.of(/[[:alpha:]]/),
       :blank  => Characters.of(/[[:blank:]]/),
@@ -49,10 +49,11 @@ class << String
   def random(options = {}, m = Propr::Random)
     min     = options[:min] || 0
     max     = options[:max] || 10
+    options = Hash[center: min].merge(options)
     charset = Characters.of(options.fetch(:charset, :print))
 
     m.bind(Integer.random(options.merge(min: min, max: max))) do |size|
-      m.bind(m.sequence(size.times.map{|_| charset.random })) do |chars|
+      m.bind(m.sequence(size.times.map { charset.random })) do |chars|
         m.unit(chars.join)
       end
     end
