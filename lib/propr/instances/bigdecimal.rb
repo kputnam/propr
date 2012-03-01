@@ -20,8 +20,8 @@ class << BigDecimal
     min = BigDecimal(options[:min] || -INF)
     max = BigDecimal(options[:max] ||  INF)
 
-    min_ = if min.finite? then min else BigDecimal(-Float::MAX.to_s) end
-    max_ = if max.finite? then max else BigDecimal( Float::MAX.to_s) end
+    min_ = if min.finite? then min else BigDecimal(-Float::MAX, 0) end
+    max_ = if max.finite? then max else BigDecimal( Float::MAX, 0) end
 
     range  = max_ - min_
     center = options.fetch(:center, :mid)
@@ -43,7 +43,7 @@ class << BigDecimal
     # @todo: -INF, +INF, -0.0, NAN
     m.bind(m.rand(range)) do |a|
       m.bind(m.rand(max_ - min_)) do |b|
-        c  = BigDecimal(a) + BigDecimal(min_.to_s)
+        c  = BigDecimal(a) + BigDecimal(min_, 0)
         c += c / BigDecimal(b) # not 0..1
         c  = max if c > max
         c  = min if c < min

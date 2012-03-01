@@ -31,7 +31,7 @@ class << Set
     # @todo: Be sure we created enough *unique* elements
     m.bind(Integer.random(options.merge(min: min, max: max))) do |size|
       m.bind(m.sequence(size.times.map { yield })) do |xs|
-        m.unit(Set.new(xs))
+        m.unit(xs.to_set)
       end
     end
   end
