@@ -3,5 +3,18 @@ require "spec_helper"
 describe Hash, "#shrink" do
 
   property("self"){|x| not x.shrink.member?(x) }
+    .check { Hash.random { sequence [Symbol.random, Integer.random] }}
+    .check { Hash.random { sequence [Integer.random, String.random] }}
+
+  property("smaller"){|x| x.shrink.all?{|y| y.size <= x.size }}
+    .check { Hash.random { String.random }}
+    .check { Hash.random { Integer.random }}
+
+  property("smallest"){|x| x.shrink.empty? }
+    .check { unit({}) }
+
+  property("contains smallest"){|x| guard(!x.empty?); x.shrink.member?({}) }
+    .check { Hash.random(max: 50) { sequence [String.random, unit(nil)] }}
+    .check { Hash.random(max: 50) { sequence [Integer.random, unit(nil)] }}
 
 end

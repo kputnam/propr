@@ -2,16 +2,16 @@ require "spec_helper"
 
 describe Propr::Random, "#scale" do
 
-  property("values"){|x| p x; true }
-    .check { Integer.random(center: 0, min: 0, max: 1e1) }
-    .check { Integer.random(center: 0, min: 0, max: 1e1) }
-    .check { Integer.random(center: 0, min: 0, max: 1e2) }
-    .check { Integer.random(center: 0, min: 0, max: 1e3) }
-    .check { Integer.random(center: 0, min: 0, max: 1e5) }
-    .check { Integer.random(center: 0, min: 0, max: 1e8) }
-    .check { Integer.random(center: 0, min: 0, max: 1e13) }
-    .check { Integer.random(center: 0, min: 0, max: 1e21) }
-    .check { Integer.random(center: 0, min: 0, max: 1e34) }
-    .check { Integer.random(center: 0, min: 0, max: 1e55) }
+  property("values"){|x| true }
+  # .check { Integer.random(center: 0, min: 0, max: 1e1) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e1) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e2) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e3) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e5) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e8) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e13) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e21) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e34) }
+  # .check { Integer.random(center: 0, min: 0, max: 1e55) }
 
 end

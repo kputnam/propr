@@ -1,7 +1,21 @@
 require "spec_helper"
+require "set"
 
 describe Set, "#shrink" do
 
-  property("self"){|x| not n.shrink.member?(x) }
+  property("self"){|x| not x.shrink.member?(x) }
+    .check { Set.random { Integer.random }}
+
+  property("smaller"){|x| x.shrink.all?{|y| y.size <= x.size }}
+    .check { Set.random { String.random }}
+    .check { Set.random { Integer.random }}
+
+  property("smallest"){|x| x.shrink.empty? }
+    .check { unit Set.new }
+
+  property("contains smallest"){|x| guard(!x.empty?); x.shrink.member?(Set.new) }
+    .check { Set.random(max: 50) { String.random }}
+    .check { Set.random(max: 50) { Integer.random }}
+
 
 end

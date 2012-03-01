@@ -1,21 +1,21 @@
 require "spec_helper"
 
-describe Integer, "#shrink" do
+describe BigDecimal, "#shrink" do
 
   property("self"){|n| not n.shrink.member?(n) }
-    .check { Integer.random }
+    .check { BigDecimal.random }
 
   property("smaller"){|n| guard(n < 0); n.shrink.all?{|m| m > n }}
-    .check { Integer.random(max: -1) }
+    .check { BigDecimal.random(max: -1) }
 
   property("smaller"){|n| guard(n > 0); n.shrink.all?{|m| m < n }}
-    .check { Integer.random(min: 1) }
+    .check { BigDecimal.random(min: 1) }
 
   property("smallest"){|n| n.shrink.empty? }
-    .check(0)
-    .check(-1)
+    .check(BigDecimal(0))
+    .check(BigDecimal(-1))
 
   property("contains smallest"){|n| guard(n != 0, n != -1); n.shrink.member?(0) }
-    .check { Integer.random }
+    .check { BigDecimal.random }
 
 end
