@@ -2,11 +2,11 @@ require "spec_helper"
 
 describe Hash, "#random" do
 
-  property("empty") { fails? { Hash.new.random }}
-  # .check
+  property("empty") { error? { Hash.new.random }}
+    .check
 
-  property("member?"){|xs| guard(!xs.empty?); k, v = xs.random; xs.member?(k) }
-  # .check { Hash.random { [Integer.random, String.random] }}
-  # .check { Hash.random { [String.random, Integer.random] }}
+  property("member?"){|xs| guard(!xs.empty?); k, v = m.eval(xs.random); xs.member?(k) }
+    .check { Hash.random { sequence [Integer.random, String.random] }}
+    .check { Hash.random { sequence [String.random, Integer.random] }}
 
 end

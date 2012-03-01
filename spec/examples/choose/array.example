@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Array, "#random" do
 
-  property("empty") { error? { [].random }}
+  property("empty") { error? { Array.new.random }}
     .check
 
   property("member?"){|xs| guard(!xs.empty?); xs.member?(m.eval xs.random) }

@@ -25,6 +25,18 @@ module Propr
         @m.guard(value)
       end
 
+      def join(value)
+        @m.join(value)
+      end
+
+      def sequence(actions)
+        @m.sequence(actions)
+      end
+
+      def scale(*args)
+        @m.scale(*args)
+      end
+
     private
 
       def method_missing(name, *args, &block)
