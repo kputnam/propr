@@ -21,8 +21,8 @@ module Propr
         @m.unit(value)
       end
 
-      def guard(value)
-        @m.guard(value)
+      def guard(*conditions)
+        @m.guard(*conditions)
       end
 
       def join(value)

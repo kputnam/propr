@@ -49,9 +49,9 @@ module Propr
     # Actions
     #############################################
 
-    def guard(condition)
+    def guard(*conditions)
       lambda do |scale|
-        [nil, scale, condition]
+        [nil, scale, conditions.all?]
       end
     end
 

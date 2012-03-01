@@ -2,24 +2,37 @@ require "spec_helper"
 
 describe Propr, "guard" do
 
-  specify "callable from property { ... }" do
-    Propr::Random.property("name") do |n|
-      guard(n > 0); true
-    end.check(100).should == true
+  # @todo: Not happy with this scoping issue. We should
+  # be able to use let(:int) { ... } instead.
+  def self.int
+    (0..100).random
   end
 
-  property "callable from property" do |n|
-    guard(n > 0); true
-  end.check(100)
+  property("callable from property") do
+    guard(true)
+    true
+  end.check
 
-  specify "callable from check { ... }" do
-    Propr::Random.property("name") do |n|
-      n == 100
-    end.check { guard(100, &:even?) }
-  end
+  property("callable from check") do
+    true
+  end.check { guard(true) }
 
-  property("callable from check") do |n|
-    n == 100
-  end.check{ guard(100, &:even?) }
+  property("skips test on unsuitable input") do |n|
+    guard(n > 10)
+    n > 10
+  end.check { int }
+
+  property("supresses unsuitable input") do |n|
+    n > 10
+  end.check { bind(int){|n| bind(guard(n > 10)) { unit(n) }}}
+
+  property("conjunction") do |n|
+    guard(n > 10, n < 90)
+    n > 10 && n < 90
+  end.check { int }
+
+  property("conjunction") do |n|
+    n > 10 && n < 90
+  end.check { bind(int){|n| bind(guard(n > 10, n < 90)) { unit(n) }}}
 
 end
