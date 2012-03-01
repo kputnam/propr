@@ -5,7 +5,10 @@ module Propr
       @options, @group, @property =
         options, group, property
 
-      @runner = Runner.new(100, 50, lambda{|p,s,*_| BigDecimal(p + s) / 100 })
+      # Run each property 100 times, allow 50 retries, and
+      # start the scale at 0, grow suddenly towards the end
+      @runner = Runner.new(100, 50,
+        lambda{|p,s,t,_| (BigDecimal(p+s <= t ? p+s : t) / t)**5 })
     end
 
     def check(*args, &generator)
