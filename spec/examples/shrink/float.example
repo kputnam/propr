@@ -1,0 +1,21 @@
+require "spec_helper"
+
+describe Float, "#shrink" do
+
+  property("self"){|n| not n.shrink.member?(n) }
+    .check { Float.random }
+
+  property("smaller"){|n| guard(n < 0); n.shrink.all?{|m| m > n }}
+    .check { Float.random(max: -1) }
+
+  property("smaller"){|n| guard(n > 0); n.shrink.all?{|m| m < n }}
+    .check { Float.random(min: 1) }
+
+  property("smallest"){|n| n.shrink.empty? }
+    .check(0)
+    .check(-1)
+
+  property("contains smallest"){|n| guard(n != 0, n != -1); n.shrink.member?(0) }
+    .check { Float.random }
+
+end
