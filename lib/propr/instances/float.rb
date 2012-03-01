@@ -20,6 +20,7 @@ class << Float
     min_ = if min.finite? then min else -Float::MAX end
     max_ = if max.finite? then max else  Float::MAX end
 
+    range  = max_ - min_
     center = options.fetch(:center, :mid)
     center =
       case center
@@ -43,11 +44,10 @@ class << Float
 
     # @todo: -Float::INFINITY, +Float::INFINITY, -0.0, Float::NAN
 
-    # Reduce range by 1.0 to account for +rand below
-    m.bind(m.rand(max_.to_i - min_.to_i)) do |whole|
+    m.bind(m.rand(range)) do |whole|
       m.bind(m.rand) do |fraction|
-        # Take care to prevent Float overflow
-        m.scale(BigDecimal(min_.to_s) + whole + fraction, center)
+        value = BigDecimal(min_.to_s) + whole + fraction
+        m.scale(value, range, center)
       end
     end
   end

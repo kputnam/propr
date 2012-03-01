@@ -60,11 +60,11 @@ module Propr
     # When given one argument, sets the current scale factor to
     # the given value, bounded between 0..1.
     #
-    # When given two arguments, scales a numeric value towards a
-    # given origin `zero`, using the current scale factor (0..1).
+    # When given two arguments, scales a numeric value around a
+    # given origin `ref`, using the current scale factor (0..1).
     #
-    def scale(number = nil, zero = nil)
-      if zero.nil?
+    def scale(number = nil, range = nil, ref = nil)
+      if range.nil?
         if number.nil?
           lambda do |scale|
             [scale, scale, true]
@@ -78,9 +78,10 @@ module Propr
           end
         end
       else
-        # Scale given number towards zero
         lambda do |scale|
-          [zero + scale * (number - zero), scale, true]
+          pct  = (number - ref) / range
+          rng_ = (range ** scale) - 1 + scale
+          [ref + rng_* pct, scale, true]
         end
       end
     end

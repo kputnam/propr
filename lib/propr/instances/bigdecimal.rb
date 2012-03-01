@@ -23,6 +23,7 @@ class << BigDecimal
     min_ = if min.finite? then min else BigDecimal(-Float::MAX.to_s) end
     max_ = if max.finite? then max else BigDecimal( Float::MAX.to_s) end
 
+    range  = max_ - min_
     center = options.fetch(:center, :mid)
     center =
       case center
@@ -40,13 +41,13 @@ class << BigDecimal
       end
 
     # @todo: -INF, +INF, -0.0, NAN
-    m.bind(m.rand(max_ - min_)) do |a|
+    m.bind(m.rand(range)) do |a|
       m.bind(m.rand(max_ - min_)) do |b|
         c  = BigDecimal(a) + BigDecimal(min_.to_s)
         c += c / BigDecimal(b) # not 0..1
         c  = max if c > max
         c  = min if c < min
-        m.scale(c, center)
+        m.scale(c, range, center)
       end
     end
   end
