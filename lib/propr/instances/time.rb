@@ -13,7 +13,7 @@ class << Time
   MIN = Time.at(-30610224000) # 1000-01-01 00:00:00 UTC
   MAX = Time.at(253402300799) # 9999-12-31 23:59:59 UTC
 
-  def random(options = {})
+  def random(options = {}, m = Propr::Random)
     min = (options[:min] || MIN).to_f
     max = (options[:max] || MAX).to_f
 
