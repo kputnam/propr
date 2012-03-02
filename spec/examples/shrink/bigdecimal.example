@@ -3,19 +3,19 @@ require "spec_helper"
 describe BigDecimal, "#shrink" do
 
   property("self"){|n| not n.shrink.member?(n) }
-    .check { BigDecimal.random }
+    .check{ BigDecimal.random }
 
-  property("smaller"){|n| guard(n < 0); n.shrink.all?{|m| m > n }}
-    .check { BigDecimal.random(max: -1) }
+  property("smaller"){|n| guard n < 0; n.shrink.all?{|m| m > n }}
+    .check{ BigDecimal.random(max: -1) }
 
-  property("smaller"){|n| guard(n > 0); n.shrink.all?{|m| m < n }}
-    .check { BigDecimal.random(min: 1) }
+  property("smaller"){|n| guard n > 0; n.shrink.all?{|m| m < n }}
+    .check{ BigDecimal.random(min: 1) }
 
   property("smallest"){|n| n.shrink.empty? }
     .check(BigDecimal(0))
     .check(BigDecimal(-1))
 
-  property("contains smallest"){|n| guard(n != 0, n != -1); n.shrink.member?(0) }
-    .check { BigDecimal.random }
+  property("contains smallest"){|n| guard n != 0, n != -1; n.shrink.member?(0) }
+    .check{ BigDecimal.random }
 
 end
