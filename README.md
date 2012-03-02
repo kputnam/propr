@@ -18,7 +18,7 @@ run with any valid inputs, the inputs and the program output are related by
 `f(input, output)`". The test framework produces random (valid) inputs,
 searching for a counterexample.
 
-## Examples
+## Properties
 
 The following example demonstrates testing a property with a specific input,
 then generalizing the test for any input.
@@ -95,7 +95,7 @@ the same inputs for the entire test suite:
       srand 317419430220052582439642446331757152805
     end
 
-## Just Plain Functions
+### Just Plain Functions
 
 Properties are basically just functions, they should return `true` or `false`.
 
@@ -107,11 +107,11 @@ invoke them using `#call` or `#[]`.
     p.check(3, 4)     #=> true
     p.check("x", "y") #=> true
 
-But you can also invoke them with a setup function that generates random
-arguments.
+But you can also invoke them by yielding a function that generates random inputs.
 
-    p.check { Propr::Random.eval(sequence [Integer.random, Float.random]) } #=> true
-    p.check { Propr::Random.eval(sequence [Array.random, Array.random]) }   #=> true
+    m = Propr::Random
+    p.check { m.eval(m.sequence [Integer.random, Float.random]) } #=> true
+    p.check { m.eval(m.sequence [Array.random, Array.random]) }   #=> true
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
@@ -134,23 +134,23 @@ describe "foo" do
 end
 ```
 
-Note your property should still return `true` or `false`. You can avoid some
-clutter by *not* using `#should` or `#assert`, because the test generator
-will generate the assertion for you.
+Note your property should still return `true` or `false`. You should *not* use
+`#should` or `#assert`, because the test generator will generate the assertion
+for you. This also reduces visual clutter.
 
 ### Property DSL
 
 The code block inside `property { ... }` has an extended scope that defines
 a few helpful methods:
 
-* Skip this iteration unless all the given conditions are met. This can be used,
-  for instance, to define a property only on even integers.  
+* __guard__: Skip this iteration unless all the given conditions are met. This
+  can be used, for instance, to define a property only on even integers.  
   `property{|x| guard(x.even?); x & 1 == 0 }`
 
-* True if the code block throws an exception of the given type.  
+* __error?__: True if the code block throws an exception of the given type.  
   `property{|x| error? { x / 0 }}`
 
-* Short alias for `Propr::Random`, used to generate random data as described
+* __m__: Short alias for `Propr::Random`, used to generate random data as described
   below.  
   `property{|x| m.eval(m.sequence([m.unit 0] * x)).length == x }`
 
@@ -159,25 +159,25 @@ a few helpful methods:
 The code block inside `check { ... }` should return a generator value. The code
 block's scope is extended with a few combinators to compose generators.
 
-* Create a generator that returns the given value. For instance, to yield `3` as
-  an argument to the property,  
+* __unit__: Create a generator that returns the given value. For instance, to yield
+  `3` as an argument to the property,  
   `check { unit(3) }`
 
-* Chain the value yielded by one generator into another. For instance, to yield
-  two integers as arguments to a property,  
+* __bind__: Chain the value yielded by one generator into another. For instance, to
+  yield two integers as arguments to a property,  
   `check { bind(Integer.random){|a| bind(Integer.random){|b| unit([a,b]) }}}`
 
-* Short-circuit the chain if the given condition is false. The entire chain will
-  be re-run until the guard passes. For instance, to generate two distinct numbers,  
+* __guard__: Short-circuit the chain if the given condition is false. The entire chain
+  will be re-run until the guard passes. For instance, to generate two distinct numbers,  
   `check { bind(Integer.random){|a| bind(Integer.random){|b| guard(a != b){ unit([a,b]) }}}}`
 
-* Remove one level of generator nesting. If you have a generator `x` that yields a
-  number generator, then `join x` is a string generator. For instance, to yield
+* __join__: Remove one level of generator nesting. If you have a generator `x` that
+  yields a number generator, then `join x` is a string generator. For instance, to yield
   either a number or a string,  
   `check { join([Integer.random, String.random]) }`
 
-* Convert a list of generator values to a generator of a list of values. For
-  instance, to yield three integers to a property,  
+* __sequence__: Convert a list of generator values to a list generator. For instance, to
+  yield three integers to a property,  
   `check { sequence [Integer.property]*3 }`
 
 ## Generating Random Values
@@ -195,7 +195,6 @@ generator. You can run the generator using the `Propr::Random.eval` method.
 
     >> m.eval Boolean.random
     => true
-
 
 ### Date
 
@@ -229,7 +228,7 @@ Options
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
-* `charset:` regular expression character class, defaults to /[[:print]]/
+* `charset:` regular expression character class, defaults to `/[[:print]]/`
 
 ### Numbers
 
@@ -257,8 +256,8 @@ Options
 
 #### Rational
 
-    >> m.eval m.bind(Integer.random){|a| m.bind(Integer.random){|b| unit Rational(a,b) }}
-    => (3419121051897208321/513829382835133827)
+    >> m.eval m.bind(m.sequence [Integer.random]*2){|a,b| unit Rational(a,b) }
+    => (300421843/443649464)
 
 Not implemented, as there isn't a nice way to ensure a `min` works. Instead,
 generate two numeric values and combine them:
@@ -276,9 +275,12 @@ Options
 
 #### Bignum
 
+    >> m.eval Integer.random(min: Integer::MAX, max: Integer::MAX * 2)
+    => 2015151263
+
 There's no constructor specifically for Bignum. You can use `Integer.random`
-and specify `min: Integer::MAX + 1` and some larger `max` value. Ruby will
-automatically handle Integer overflow by coercing to Bignum.
+and specify `min: Integer::MAX + 1` and some even larger `max` value. Ruby
+will automatically handle Integer overflow by coercing to Bignum.
 
 #### Complex
 
@@ -289,6 +291,10 @@ Not implemented, as there's no simple way to implement min and max, nor the type
 of the components. Instead, generate two numeric values and combine them:
 
 ### Collections
+
+The class method `random` returns a generator to construct a collection of
+elements, while the `#random` instance method returns a generator which returns
+an element from the collection.
 
 #### Array
 
@@ -329,7 +335,7 @@ Options
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
 
-### Range
+#### Range
 
 Expects __either__ a block parameter __or__ one or both of min and max.
 
@@ -345,7 +351,7 @@ Options
 * `max:` maximum element
 * `inclusive?:` defaults to true, meaning Range includes max element
 
-### Elements from a collection
+#### Elements from a collection
 
 The `#random` instance method is defined on the above types. It takes no parameters.
 
@@ -360,6 +366,74 @@ The `#random` instance method is defined on the above types. It takes no paramet
     
     >> m.eval Set.new([1,2,3,4]).random
     => 4
+    
+## Attenuation (limiting the search space for counter examples)
+
+The `m.eval` method has a second parameter that serves to exponentially reduce
+the domain for generators, specified with `min:` and `max:` parameters. The scale
+value may range from `0` to `1`, where `1` causes no change.
+
+When scale is `0`, the domain is reduced to a single value, which is specified by
+the `center:` parameter. Usually this defaults to the midpoint between `min:` and
+`max:`. Any value between `min:` and `max:` can be given for `center:`, in addition
+to the three symbolic values, `:min`, `:mid`, and `:max`.
+
+Scale values beteween `0` and `1` adjust the domain exponentially, so a domain with
+10,000 elements when `scale = 1` will have 1,000 elements when `scale = 0.5` and
+only 100 when `scale = 0.25`.
+
+With `scale = 0`, the domain contains at most `10000^0 = 1` elements:
+
+    >> m.eval Integer.random(min: 0, max: 10000, center: :min), 0
+    == m.eval Integer.random(min: 0, max: 0)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :mid), 0
+    == m.eval Integer.random(min: 5000, max: 5000)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :max), 0
+    == m.eval Integer.random(min: 10000, max: 10000)
+
+With `scale = 0.25`, the domain contains at most `10000^0.25 = 10` elements:
+
+    >> m.eval Integer.random(min: 0, max: 10000, center: :min), 0.25
+    == m.eval Integer.random(min: 0, max: 9)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :mid), 0.25
+    == m.eval Integer.random(min: 4996, max: 5004)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :max), 0.25
+    == m.eval Integer.random(min: 9991, max: 10000)
+
+With `scale = 0.50`, the domain contains at most `10000^0.5 = 100` elements:
+
+    >> m.eval Integer.random(min: 0, max: 10000, center: :min), 0.5
+    == m.eval Integer.random(min: 0, max: 99)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :mid), 0.5
+    == m.eval Integer.random(min: 4951, max: 5048)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :max), 0.5
+    == m.eval Integer.random(min: 9901, max: 10000)
+
+With `scale = 0.75`, the domain contains at most `10000^0.75 = 1000` elements:
+
+    >> m.eval Integer.random(min: 0, max: 10000, center: :min), 0.75
+    == m.eval Integer.random(min: 0, max: 998)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :mid), 0.75
+    == m.eval Integer.random(min: 4507, max: 5499)
+    
+    >> m.eval Integer.random(min: 0, max: 10000, center: :max), 0.75
+    == m.eval Integer.random(min: 9002, max: 10000)
+    
+### Iterative deepening of the search space
+
+By default, the test framework adapters increase the scale linearly (causing
+an exponential increase of the domain size) each time the property is tested.
+
+That is, when running 100 iterations, scale values will be 0.00, 0.01, 0.02,
+0.03, 0.04, etc. This is intended to test the simplest counterexamples first,
+and increase the complexity of generated inputs exponentially.
 
 ## More Reading
 
