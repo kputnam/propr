@@ -3,18 +3,18 @@ require "spec_helper"
 describe Array, "#shrink" do
 
   property("self"){|x| not x.shrink.member?(x) }
-    .check { Array.random { String.random }}
-    .check { Array.random { Integer.random }}
+    .check{ Array.random { String.random }}
+    .check{ Array.random { Integer.random }}
 
   property("smaller"){|x| x.shrink.all?{|y| y.size <= x.size }}
-    .check { Array.random { String.random }}
-    .check { Array.random { Integer.random }}
+    .check{ Array.random { String.random }}
+    .check{ Array.random { Integer.random }}
 
   property("smallest"){|x| x.shrink.empty? }
-    .check { unit [] }
+    .check{ unit [] }
 
-  property("contains smallest"){|x| guard(!x.empty?); x.shrink.member?([]) }
-    .check { Array.random(max: 50) { unit(nil) }}
-    .check { Array.random(max: 50) { unit(nil) }}
+  property("contains smallest"){|x| guard !x.empty?; x.shrink.member?([]) }
+    .check{ Array.random(max: 50) { unit(nil) }}
+    .check{ Array.random(max: 50) { unit(nil) }}
 
 end

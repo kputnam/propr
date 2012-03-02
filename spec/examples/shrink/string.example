@@ -3,15 +3,15 @@ require "spec_helper"
 describe String, "#shrink" do
 
   property("self"){|s| not s.shrink.member?(s) }
-    .check { String.random }
+    .check{ String.random }
 
   property("smaller"){|x| x.shrink.all?{|y| y.size <= x.size }}
-    .check { String.random }
+    .check{ String.random }
 
   property("smallest"){|x| x.shrink.empty? }
-    .check { unit "" }
+    .check{ unit "" }
 
-  property("contains smallest"){|x| guard(!x.empty?); x.shrink.member?("") }
-    .check { String.random(max: 50) }
+  property("contains smallest"){|x| guard !x.empty?; x.shrink.member?("") }
+    .check{ String.random(max: 50) }
 
 end
