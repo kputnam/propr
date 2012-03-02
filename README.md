@@ -199,16 +199,19 @@ generator. You can run the generator using the `Propr::Random.eval` method.
 
 ### Date
 
+    >> m.eval(Date.random(min: Date.today - 10, max: Date.today + 10)).to_s
+    => "2012-03-01"
+
 Options
 
 * `min:` minimum value, defaults to 0001-01-01
 * `max:` maximum value, defaults to 9999-12-31
 * `center:` defaults to the midpoint between min and max
 
-    >> m.eval(Date.random(min: Date.today - 10, max: Date.today + 10)).to_s
-    => "2012-03-01"
-
 ### Time
+
+    >> m.eval Time.random(min: Time.now, max: Time.now + 3600)
+    => 2012-02-20 13:47:57 -0600
 
 Options
 
@@ -216,10 +219,10 @@ Options
 * `max:` maximum value, defaults to 9999-12-31 12:59:59 UTC
 * `center:` defaults to the midpoint between min and max
 
-    >> m.eval Time.random(min: Time.now, max: Time.now + 3600)
-    => 2012-02-20 13:47:57 -0600
-
 ### String
+
+    >> m.eval String.random(min: 5, max: 10, charset: :lower)
+    => "rqyhw"
 
 Options
 
@@ -228,12 +231,12 @@ Options
 * `center:` defaults to the midpoint between min and max
 * `charset:` regular expression character class, defaults to /[[:print]]/
 
-    >> m.eval String.random(min: 5, max: 10, charset: :lower)
-    => "rqyhw"
-
 ### Numbers
 
 #### Integer
+
+    >> m.eval Integer.random(min: -500, max: 500)
+    => -382
 
 Options
 
@@ -241,10 +244,10 @@ Options
 * `max:` maximum value, defaults to Integer::MAX
 * `center:` defaults to the midpoint between min and max.
 
-    >> m.eval Integer.random(min: -500, max: 500)
-    => -382
-
 #### Float
+
+    >> m.eval Float.random(min: -500, max: 500)
+    => 48.252030464134364
 
 Options
 
@@ -252,27 +255,24 @@ Options
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max.
 
-    >> m.eval Float.random(min: -500, max: 500)
-    => 48.252030464134364
-
 #### Rational
-
-Not implemented, as there isn't a nice way to ensure a `min` works. Instead,
-generate two numeric values and combine them:
 
     >> m.eval m.bind(Integer.random){|a| m.bind(Integer.random){|b| unit Rational(a,b) }}
     => (3419121051897208321/513829382835133827)
 
+Not implemented, as there isn't a nice way to ensure a `min` works. Instead,
+generate two numeric values and combine them:
+
 #### BigDecimal
+
+    >> m.eval(BigDecimal.random(min: 10, max: 20)).to_s("F")
+    => "14.934854011762374703280016489856414847259220844969789892"
 
 Options
 
 * `min:` minimum value, defaults to -Float::MAX
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max
-
-    >> m.eval(BigDecimal.random(min: 10, max: 20)).to_s("F")
-    => "14.934854011762374703280016489856414847259220844969789892"
 
 #### Bignum
 
@@ -282,11 +282,11 @@ automatically handle Integer overflow by coercing to Bignum.
 
 #### Complex
 
-Not implemented, as there's no simple way to implement min and max, nor the types
-of the components. Instead, generate two numeric values and combine them:
-
     >> m.eval(m.bind(m.sequence [Float.random(min:-10, max:10)]*2){|a,b| m.unit Complex(a,b) })
     => (9.806161068637833+7.523520738439842i)
+
+Not implemented, as there's no simple way to implement min and max, nor the types
+of the components. Instead, generate two numeric values and combine them:
 
 ### Collections
 
@@ -294,56 +294,56 @@ of the components. Instead, generate two numeric values and combine them:
 
 Expects a block parameter that yields a generator for elements.
 
+    >> m.eval Array.random(min:4, max:4) { String.random(min:4, max:4) }
+    => ["2n #", "UZ1d", "0vF,", "cV_{"]
+
 Options
 
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
-
-    >> m.eval Array.random(min:4, max:4) { String.random(min:4, max:4) }
-    => ["2n #", "UZ1d", "0vF,", "cV_{"]
 
 #### Hash
 
 Expects a block parameter that yields generator of [key, value] pairs.
 
+    >> m.eval Hash.random(min:2, max:4) { m.sequence [Integer.random, m.unit(nil)] }
+    => {564854752=>nil, -1065292239=>nil, 830081146=>nil}
+
 Options
 
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
-
-    >> m.eval Hash.random(min:2, max:4) { m.sequence [Integer.random, m.unit(nil)] }
-    => {564854752=>nil, -1065292239=>nil, 830081146=>nil}
 
 #### Set
 
 Expects a block parameter that yields a generator for elements.
 
+    >> m.eval Set.random(min:4, max:4) { String.random(min:4, max:4) }
+    => #<Set: {"2n #", "UZ1d", "0vF,", "cV_{"}>
+
 Options
 
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
 
-    >> m.eval Set.random(min:4, max:4) { String.random(min:4, max:4) }
-    => #<Set: {"2n #", "UZ1d", "0vF,", "cV_{"}>
-
 ### Range
 
-Expects _either_ a block parameter or one or both of min and max.
-
-Options
-
-* `min:` minimum element
-* `max:` maximum element
-* `inclusive?:` defaults to true, meaning Range includes max element
+Expects __either__ a block parameter __or__ one or both of min and max.
 
     >> m.eval Range.random(min: 0, max: 100)
     => 81..58
 
     >> m.eval Range.random { Integer.random(min: 0, max: 100) }
     => 9..80
+
+Options
+
+* `min:` minimum element
+* `max:` maximum element
+* `inclusive?:` defaults to true, meaning Range includes max element
 
 ### Elements from a collection
 
