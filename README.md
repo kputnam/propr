@@ -38,7 +38,7 @@ describe Array do
     # Property-based test
     property("sums lengths"){|xs, ys| (xs + ys).length == xs.length + ys.length }
       .check([100, 200, 300], [500, 200])
-      .check{ [Array.random { Integer.random }, Array.random { Integer.random }] }
+      .check{ sequence [Array.random { Integer.random }, Array.random { Integer.random }] }
   end
 end
 ```
@@ -61,7 +61,7 @@ describe Array do
     # Property-based test
     property("sums lengths"){|xs, ys| (xs | ys).length == xs.length + ys.length }
       .check([100, 200, 300], [500, 200])
-      .check{ [Array.random { Integer.random }, Array.random { Integer.random }] }
+      .check{ sequence [Array.random { Integer.random }, Array.random { Integer.random }] }
   end
 end
 ```
@@ -74,12 +74,9 @@ When this specification is executed, the following error is reported.
     Failures:
 
       1) Array#| with two arrays x and y has length equal to x.length + y.length
-         Failure/Error:
-         expected: 4,
-              got: 3 (using ==)
-         after 25 successes
-         with [[false, "!~w", false], [-187294205]]
-         with srand 317419430220052582439642446331757152805
+         Propr::Falsifiable:
+           input: [[224, -11, 62], [84, 241, -11]]
+           after: 307 passed, 0 skipped
 
     Finished in 0.02185 seconds
     2 examples, 1 failure
@@ -102,7 +99,7 @@ the same inputs for the entire test suite:
 
 Properties are basically just functions, they should return `true` or `false`.
 
-    p = Propr::Random.property("name"){|a,b| a + b == b + a }
+    p = Propr::Property.new("name", lambda{|a,b| a + b == b + a })
 
 You can invoke a property using `#check`. Like lambdas and procs, you can also
 invoke them using `#call` or `#[]`.
@@ -113,8 +110,8 @@ invoke them using `#call` or `#[]`.
 But you can also invoke them with a setup function that generates random
 arguments.
 
-    p.check{ [Integer.random, Float.random] } #=> true
-    p.check{ [Array.random, Array.random] }   #=> true
+    p.check { Propr::Random.eval(sequence [Integer.random, Float.random]) } #=> true
+    p.check { Propr::Random.eval(sequence [Array.random, Array.random]) }   #=> true
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
@@ -141,187 +138,222 @@ Note your property should still return `true` or `false`. You can avoid some
 clutter by *not* using `#should` or `#assert`, because the test generator
 will generate the assertion for you.
 
+### Property DSL
+
+The code block inside `property { ... }` has an extended scope that defines
+a few helpful methods:
+
+* Skip this iteration unless all the given conditions are met. This can be used,
+  for instance, to define a property only on even integers.  
+  `property{|x| guard(x.even?); x & 1 == 0 }`
+
+* True if the code block throws an exception of the given type.  
+  `property{|x| error? { x / 0 }}`
+
+* Short alias for `Propr::Random`, used to generate random data as described
+  below.  
+  `property{|x| m.eval(m.sequence([m.unit 0] * x)).length == x }`
+
+### Check DSL
+
+The code block inside `check { ... }` should return a generator value. The code
+block's scope is extended with a few combinators to compose generators.
+
+* Create a generator that returns the given value. For instance, to yield `3` as
+  an argument to the property,  
+  `check { unit(3) }`
+
+* Chain the value yielded by one generator into another. For instance, to yield
+  two integers as arguments to a property,  
+  `check { bind(Integer.random){|a| bind(Integer.random){|b| unit([a,b]) }}}`
+
+* Short-circuit the chain if the given condition is false. The entire chain will
+  be re-run until the guard passes. For instance, to generate two distinct numbers,  
+  `check { bind(Integer.random){|a| bind(Integer.random){|b| guard(a != b){ unit([a,b]) }}}}`
+
+* Remove one level of generator nesting. If you have a generator `x` that yields a
+  number generator, then `join x` is a string generator. For instance, to yield
+  either a number or a string,  
+  `check { join([Integer.random, String.random]) }`
+
+* Convert a list of generator values to a generator of a list of values. For
+  instance, to yield three integers to a property,  
+  `check { sequence [Integer.property]*3 }`
+
 ## Generating Random Values
 
-Propr defines a `random` constructor method on most standard Ruby types. Some
-generators require some implicit state, so when generating data outside of the
-body of `property { ... }` or the body of a `check { ... }` you must wrap the
-code with `Propr::Random.generate { ... }`. For instance,
+Propr defines a `random` method on most standard Ruby types that returns a
+generator. You can run the generator using the `eval` method.
 
-    Propr::Random.generate { Boolean.random }
+    >> m = Propr::Random
+    => ...
+    
+    >> m.eval(Boolean.random)
+    => false
+    
+Note that the second parameter is a `scale` value between `0` and `1` that
+is used to exponentially scale the domain of generators that have `min` and
+`max` parameters.
 
 ### Boolean
 
-    >> Boolean.random
+    >> m.eval Boolean.random
     => true
 
-### Numeric
-
-#### Integer
-
-Random integer between Integer::MIN and Integer::MAX
-
-    >> Integer.random
-    => -1830258881470840048
-
-Random integer between 0 and 10
-
-    >> Integer.prop(max: 0, min: 10)
-    => 6
-
-#### Float
-
-Random float between -Float::MAX and Float::MAX
-
-    >> Float.random
-    => 1769470177.4186616
-
-Random float between 0 and 10
-
-    >> Float.random(min: 0, max: 10)
-    => 8.47034059208399
-
-#### Rational
-
-    >> Rational.new(Integer.random, Integer.random)
-    => (3419121051897208321/513829382835133827)
-
-#### BigDecimal
-
-    >> BigDecimal.random.to_s("F")
-    => "7936297730318639394.320561703810327716036557741373593518621908133293211327"
-
-    >> BigDecimal.random(min: 10, max: 20).to_s("F")
-    => "14.934854011762374703280016489856414847259220844969789892"
-
-#### Bignum
-
-There's no constructor specifically for Bignum, but you can use `Integer.random`
-and provide a large `min: n`. Ruby will automatically handle integer overflow by
-coercing to Bignum.
-
-#### Complex
-
-    >> Complex(Integer.random(min:-10, max:10), Integer.random(min:-10, max:10))
-    => (-2+1i)
-
-    >> Complex(Float.random(min:-10, max:10), Float.random(min:-10, max:10))
-    => (9.806161068637833+7.523520738439842i)
-
-### Character
-
-    >> String.random(min: 1, max: 1)
-    => "2"
 
 ### Date
 
-    => Date.random
-    >> #<Date: 3388-04-30 (5917243/2,0,2299161)>
+Options
+* `min:` minimum value, defaults to 0001-01-01
+* `max:` maximum value, defaults to 9999-12-31
+* `center:` defaults to the midpoint between min and max
 
-    => Date.random(min: Date.today - 10, max: Date.today + 10).to_s
-    >> "2012-03-01"
+    >> m.eval(Date.random(min: Date.today - 10, max: Date.today + 10)).to_s
+    => "2012-03-01"
 
 ### Time
 
-    => Time.random
-    >> 3099-12-23 20:00:53 -0600
+Options
+* `min:` minimum value, defaults to 1000-01-01 00:00:00 UTC
+* `max:` maximum value, defaults to 9999-12-31 12:59:59 UTC
+* `center:` defaults to the midpoint between min and max
 
-    => Time.random(min: Time.now, max: Time.now + 3600)
+    >> m.eval Time.random(min: Time.now, max: Time.now + 3600)
     => 2012-02-20 13:47:57 -0600
 
 ### String
 
-    >> String.random
-    => " BW05a"
+Options
+* `min:` minimum size, defaults to 0
+* `max:` maximum size, defaults to 10
+* `center:` defaults to the midpoint between min and max
+* `charset:` regular expression character class, defaults to /[[:print]]/
 
-    >> String.random(min: 2, max: 4)
-    => "b`R{"
+    >> m.eval String.random(min: 5, max: 10, charset: :lower)
+    => "rqyhw"
 
-Create a string matching the given character class
+### Numbers
 
-    >> String.random(charset: :alnum)
-    => "dX8PzV"
+#### Integer
 
-    >> String.random(charset: :alpha)
-    => "yaTCXP"
+Options
+* `min:` minimum value, defaults to Integer::MIN
+* `max:` maximum value, defaults to Integer::MAX
+* `center:` defaults to the midpoint between min and max.
 
-    >> String.random(charset: :blank)
-    => " \t  \t\t"
+    >> m.eval Integer.random(min: -500, max: 500)
+    => -382
 
-    >> String.random(charset: :cntrl)
-    => "\x00\x0F\x04\x12\x1C\x02"
+#### Float
 
-    >> String.random(charset: :digit)
-    => "500961"
+Options
+* `min:` minimum value, defaults to -Float::MAX
+* `max:` maximum value, defaults to Float::MAX
+* `center:` defaults to the midpoint between min and max.
 
-    >> String.random(charset: :graph)
-    => "i;NAb!"
+    >> m.eval Float.random(min: -500, max: 500)
+    => 48.252030464134364
 
-    >> String.random(charset: :lower)
-    => "llrqzi"
+#### Rational
 
-    >> String.random(charset: :print)
-    => ":zER**"
+Not implemented, as there isn't a nice way to ensure a `min` works. Instead,
+generate two numeric values and combine them:
 
-    >> String.random(charset: :punct)
-    => "=&{%_("
+    >> m.eval m.bind(Integer.random){|a| m.bind(Integer.random){|b| unit Rational(a,b) }}
+    => (3419121051897208321/513829382835133827)
 
-    >> String.random(charset: :space)
-    => " \f\t\n\v\r"
+#### BigDecimal
 
-    >> String.random(charset: :upper)
-    => "TSLVVO"
+Options
+* `min:` minimum value, defaults to -Float::MAX
+* `max:` maximum value, defaults to Float::MAX
+* `center:` defaults to the midpoint between min and max
 
-    >> String.random(charset: :xdigit)
-    => "54fEe7"
+    >> m.eval(BigDecimal.random(min: 10, max: 20)).to_s("F")
+    => "14.934854011762374703280016489856414847259220844969789892"
 
-    >> String.random(charset: :ascii)
-    => "zS9l.@"
+#### Bignum
 
-    >> String.random(charset: :any)
-    => "\nx\xC0\xE1\xB3\x86"
+There's no constructor specifically for Bignum. You can use `Integer.random`
+and specify `min: Integer::MAX + 1` and some larger `max` value. Ruby will
+automatically handle Integer overflow by coercing to Bignum.
 
-    >> String.random(charset: /[w-z]/)
-    => "wxxzwwx"
+#### Complex
 
-### Array
+Not implemented, as there's no simple way to implement min and max, nor the types
+of the components. Instead, generate two numeric values and combine them:
 
-Create a 4-element array of 4-character strings
+    >> m.eval(m.bind(m.sequence [Float.random(min:-10, max:10)]*2){|a,b| m.unit Complex(a,b) })
+    => (9.806161068637833+7.523520738439842i)
 
-    >> Array.random(min:4, max:4) { String.random(min:4, max:4) }
+### Collections
+
+#### Array
+
+Expects a block parameter that yields a generator for elements.
+
+Options
+* `min:` minimum size, defaults to 0
+* `max:` maximum size, defaults to 10
+* `center:` defaults to the midpoint between min and max
+
+    >> m.eval Array.random(min:4, max:4) { String.random(min:4, max:4) }
     => ["2n #", "UZ1d", "0vF,", "cV_{"]
 
-### Hash
+#### Hash
 
-    TODO
+Expects a block parameter that yields generator of [key, value] pairs.
 
-## Guards
+Options
+* `min:` minimum size, defaults to 0
+* `max:` maximum size, defaults to 10
+* `center:` defaults to the midpoint between min and max
 
-Many properties have some kind of precondition, like the property holds
-for all even numbers, but we're not interested on checking the property
-on odd numbers. We can specify these quickly using `guard`:
+    >> m.eval Hash.random(min:2, max:4) { m.sequence [Integer.random, m.unit(nil)] }
+    => {564854752=>nil, -1065292239=>nil, 830081146=>nil}
 
-The `guard` method throws an exception if the condition isn't satisfied,
-and normally the caller knows to retry sum fixed number of times before
-finally giving up.
+#### Set
 
-    >> guard(111, &:even?)
-    Propr::GuardFailure
-      from ...
-      from ...
+Expects a block parameter that yields a generator for elements.
 
-    >> guard(false)
-    Propr::GuardFailure
-      from ...
-      from ...
+Options
+* `min:` minimum size, defaults to 0
+* `max:` maximum size, defaults to 10
+* `center:` defaults to the midpoint between min and max
 
-If the property holds, the original value is simply returned.
+    >> m.eval Set.random(min:4, max:4) { String.random(min:4, max:4) }
+    => #<Set: {"2n #", "UZ1d", "0vF,", "cV_{"}>
 
-    >> guard(112, &:even?)
-    => 112
+### Range
 
-    >> guard(0 < 10)
-    => true
+Expects _either_ a block parameter or one or both of min and max.
+
+Options
+* `min:` minimum element
+* `max:` maximum element
+* `inclusive?:` defaults to true, meaning Range includes max element
+
+    >> m.eval Range.random(min: 0, max: 100)
+    => 81..58
+
+    >> m.eval Range.random { Integer.random(min: 0, max: 100) }
+    => 9..80
+
+### Elements from a collection
+
+The `#random` instance method is defined on the above types. It takes no parameters.
+
+    >> m.eval [1,2,3,4,5].random
+    => 4
+    
+    >> m.eval({a: 1, b: 2, c: 3, d: 4}.random)
+    => [:b, 2]
+    
+    >> m.eval (0..100).random
+    => 12
+    
+    >> m.eval Set.new([1,2,3,4]).random
+    => 4
 
 ## More Reading
 
