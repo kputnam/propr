@@ -183,17 +183,13 @@ block's scope is extended with a few combinators to compose generators.
 ## Generating Random Values
 
 Propr defines a `random` method on most standard Ruby types that returns a
-generator. You can run the generator using the `eval` method.
+generator. You can run the generator using the `Propr::Random.eval` method.
 
     >> m = Propr::Random
     => ...
     
     >> m.eval(Boolean.random)
     => false
-    
-Note that the second parameter is a `scale` value between `0` and `1` that
-is used to exponentially scale the domain of generators that have `min` and
-`max` parameters.
 
 ### Boolean
 
@@ -204,6 +200,7 @@ is used to exponentially scale the domain of generators that have `min` and
 ### Date
 
 Options
+
 * `min:` minimum value, defaults to 0001-01-01
 * `max:` maximum value, defaults to 9999-12-31
 * `center:` defaults to the midpoint between min and max
@@ -214,6 +211,7 @@ Options
 ### Time
 
 Options
+
 * `min:` minimum value, defaults to 1000-01-01 00:00:00 UTC
 * `max:` maximum value, defaults to 9999-12-31 12:59:59 UTC
 * `center:` defaults to the midpoint between min and max
@@ -224,6 +222,7 @@ Options
 ### String
 
 Options
+
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
@@ -237,6 +236,7 @@ Options
 #### Integer
 
 Options
+
 * `min:` minimum value, defaults to Integer::MIN
 * `max:` maximum value, defaults to Integer::MAX
 * `center:` defaults to the midpoint between min and max.
@@ -247,6 +247,7 @@ Options
 #### Float
 
 Options
+
 * `min:` minimum value, defaults to -Float::MAX
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max.
@@ -265,6 +266,7 @@ generate two numeric values and combine them:
 #### BigDecimal
 
 Options
+
 * `min:` minimum value, defaults to -Float::MAX
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max
@@ -293,6 +295,7 @@ of the components. Instead, generate two numeric values and combine them:
 Expects a block parameter that yields a generator for elements.
 
 Options
+
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
@@ -305,6 +308,7 @@ Options
 Expects a block parameter that yields generator of [key, value] pairs.
 
 Options
+
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
@@ -317,6 +321,7 @@ Options
 Expects a block parameter that yields a generator for elements.
 
 Options
+
 * `min:` minimum size, defaults to 0
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
@@ -329,6 +334,7 @@ Options
 Expects _either_ a block parameter or one or both of min and max.
 
 Options
+
 * `min:` minimum element
 * `max:` maximum element
 * `inclusive?:` defaults to true, meaning Range includes max element
