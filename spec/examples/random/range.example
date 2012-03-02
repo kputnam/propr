@@ -3,41 +3,41 @@ require "spec_helper"
 describe Range, ".random" do
 
   context "min" do
-    property("bounded"){|n| Range.random(min: n).first >= n }
+    property("bounded"){|n| m.eval(Range.random(min: n)).first >= n }
       .check{ Integer.random }
   end
 
   context "max" do
-    property("bounded"){|n| Range.random(max: n).last <= n }
+    property("bounded"){|n| m.eval(Range.random(max: n)).last <= n }
       .check{ Integer.random }
   end
 
   context "min and max" do
-    property("bounded"){|a,b| guard a <= b; Range.random(min: a, max: b).first >= a }
-      .check{ [Integer.random, Integer.random] }
+    property("bounded"){|a,b| guard a <= b; m.eval(Range.random(min: a, max: b)).first >= a }
+      .check{ bind(sequence [Integer.random, Integer.random]){|xs| unit xs.sort }}
 
-    property("bounded"){|a,b| Range.random(min: a, max: b).last <= b }
-      .check{ guard([Integer.random, Integer.random], &:<=) }
+    property("bounded"){|a,b| guard a <= b; m.eval(Range.random(min: a, max: b)).last <= b }
+      .check{ bind(sequence [Integer.random, Integer.random]){|xs| unit xs.sort }}
   end
 
   context "inclusive?" do
     property("true"){|r| not r.exclude_end? }
-      .check{ Range.random(inclusive?: true, min: -5, max: 5) }
+      .check{ Range.random(inclusive?: true, max: Integer::MAX) }
 
     property("false"){|r| r.exclude_end? }
-      .check{ Range.random(inclusive?: false, min: -5, max: 5) }
+      .check{ Range.random(inclusive?: false, min: -Integer::MAX) }
   end
 
   context "block" do
-    specify "called twice" do
+    property "called once" do
       count = 0
-      range = Range.random(inclusive?: true) { count += 1 }
-      range.should == (1..2)
-    end
+      range = m.eval(Range.random(inclusive?: true) { m.unit(count += 1) })
+      range.should == (1..1)
+    end.check
   end
 
   specify "args required" do
-    lambda { Range.random }.should raise_error
+    expect { Range.random }.to raise_error
   end
 
 end
