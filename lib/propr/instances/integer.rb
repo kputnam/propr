@@ -1,4 +1,7 @@
 class Integer
+  MAX = 2 ** (0.size * 8 - 2) - 1
+  MIN = -MAX + 1
+
   # @return [Enumerator<Integer>]
   def shrink
     Array.unfold(self) do |seed|
@@ -10,12 +13,9 @@ class Integer
 end
 
 class << Integer
-  MAX = 2 ** (0.size * 8 - 2) - 1
-  MIN = -MAX + 1
-
   def random(options = {}, m = Propr::Random)
-    min = (options[:min] || MIN).to_i
-    max = (options[:max] || MAX).to_i
+    min = (options[:min] || Integer::MIN).to_i
+    max = (options[:max] || Integer::MAX).to_i
 
     raise ArgumentError,
       "min > max" if min > max
