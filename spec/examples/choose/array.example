@@ -6,7 +6,7 @@ describe Array, "#random" do
     .check
 
   property("member?"){|xs| guard(!xs.empty?); xs.member?(m.eval xs.random) }
-    .check { Array.random { Integer.random }}
-    .check { Array.random { String.random }}
+    .check { Array.random(min: 1) { Integer.random }}
+    .check { Array.random(min: 1) { String.random }}
 
 end
