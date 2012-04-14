@@ -105,13 +105,13 @@ You can invoke a property using `#check`. Like lambdas and procs, you can also
 invoke them using `#call` or `#[]`.
 
     p.check(3, 4)     #=> true
-    p.check("x", "y") #=> true
+    p.check("x", "y") #=> false
 
 But you can also invoke them by yielding a function that generates random inputs.
 
     m = Propr::Random
-    p.check { m.eval(m.sequence [Integer.random, Float.random]) } #=> true
-    p.check { m.eval(m.sequence [Array.random, Array.random]) }   #=> true
+    p.check { m.eval(m.sequence [Integer.random, Float.random]) }  #=> true
+    p.check { m.eval(m.sequence [String.random , String.random]) } #=> false
 
 When invoked with a block, `check` will run `p` with 100 random inputs by
 default, but you can also pass an argument to `check` indicating how many
@@ -137,6 +137,15 @@ end
 Note your property should still return `true` or `false`. You should *not* use
 `#should` or `#assert`, because the test generator will generate the assertion
 for you. This also reduces visual clutter.
+
+Alternatively, to use Propr with all specification, you can add this to your
+`spec_helper.rb`
+
+```ruby
+RSpec.configure do |config|
+  include Propr::RSpec
+end
+```
 
 ### Property DSL
 
@@ -172,18 +181,18 @@ block's scope is extended with a few combinators to compose generators.
   `check { bind(Integer.random){|a| bind(Integer.random){|b| guard(a != b){ unit([a,b]) }}}}`
 
 * __join__: Remove one level of generator nesting. If you have a generator `x` that
-  yields a number generator, then `join x` is a string generator. For instance, to yield
+  *yields* a number generator, then `join x` is a number generator. For instance, to yield
   either a number or a string,  
-  `check { join([Integer.random, String.random]) }`
+  `check { join([Integer.random, String.random].random) }`
 
 * __sequence__: Convert a list of generator values to a list generator. For instance, to
   yield three integers to a property,  
-  `check { sequence [Integer.property]*3 }`
+  `check { sequence [Integer.random]*3 }`
 
 ## Generating Random Values
 
-Propr defines a `random` method on most standard Ruby types that returns a
-generator. You can run the generator using the `Propr::Random.eval` method.
+Propr defines a `random` method that returns a generator for most standard
+Ruby types. You can run the generator using the `Propr::Random.eval` method.
 
     >> m = Propr::Random
     => ...
@@ -355,16 +364,16 @@ Options
 
 The `#random` instance method is defined on the above types. It takes no parameters.
 
-    >> m.eval [1,2,3,4,5].random
+    >> m.eval([1,2,3,4,5].random)
     => 4
     
     >> m.eval({a: 1, b: 2, c: 3, d: 4}.random)
     => [:b, 2]
     
-    >> m.eval (0..100).random
+    >> m.eval((0..100).random)
     => 12
     
-    >> m.eval Set.new([1,2,3,4]).random
+    >> m.eval(Set.new([1,2,3,4]).random)
     => 4
     
 ## Attenuation (limiting the search space for counter examples)
@@ -426,7 +435,7 @@ With `scale = 0.75`, the domain contains at most `10000^0.75 = 1000` elements:
     >> m.eval Integer.random(min: 0, max: 10000, center: :max), 0.75
     == m.eval Integer.random(min: 9002, max: 10000)
     
-### Iterative deepening of the search space
+### Deepening of the Search Space
 
 By default, the test framework adapters increase the scale linearly (causing
 an exponential increase of the domain size) each time the property is tested.
@@ -434,6 +443,36 @@ an exponential increase of the domain size) each time the property is tested.
 That is, when running 100 iterations, scale values will be 0.00, 0.01, 0.02,
 0.03, 0.04, etc. This is intended to test the simplest counterexamples first,
 and increase the complexity of generated inputs exponentially.
+
+### Simplification of Counterexamples
+
+Once a random input has been classified as a counterexample, Propr will
+search for a simpler counterexample. This is done by iteratively calling
+`#shrink` on each successively smaller counterexample.
+
+    $ cat shrink.example
+    require "spec_helper"
+
+    describe Float do
+      property("assoc"){|x,y,z| (x + y) + z == x + (y + z) }
+       .check(-382863.98514407175, 224121.21177705095, 276118.77134001954)
+    end
+
+    $ rspec shrink.example
+    F
+
+    Failures:
+
+      1) Propr::Random#scale shrink
+         Propr::Falsifiable:
+           input: [-0.2886402084071274, 0.21834104334780227, 2.323281102654298e-05]
+           after: 2 passed, 0 skipped
+
+    1 example, 1 failure
+
+Notice the output shows a "simpler" counterexample than the inputs we explicitly
+tested. This becomes useful when testing with more complex data like trees, where
+it can be difficult to understand which aspect of the counterexample is relevant.
 
 ## More Reading
 
