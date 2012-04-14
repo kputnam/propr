@@ -20,7 +20,8 @@ begin
     t.verbose = false
     t.pattern = "#{relpath}/spec/examples/**/*.example"
 
-    t.rspec_opts  = %w(--color --format p)
+    t.rspec_opts  = %w(--color)
+    t.rspec_opts << "--profile"
     t.rspec_opts << "-I#{abspath}/spec"
   end
 rescue LoadError
