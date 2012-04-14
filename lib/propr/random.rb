@@ -1,10 +1,10 @@
 module Propr
 
   class Random
-    include Monad
   end
 
   class << Random
+    include Fr::Monad
 
     # Evaluators
     #############################################
@@ -50,6 +50,7 @@ module Propr
     # Actions
     #############################################
 
+    # TODO: Make Random an instance of Functor and use Functor.guard?
     def guard(*conditions)
       lambda do |scale|
         [nil, scale, conditions.all?]
@@ -60,12 +61,17 @@ module Propr
     # given origin `zero`, using the current scale factor (0..1).
     #
     def scale(number, range, zero)
+      # lambda do |scale|
+      #   # Shrink range exponentially, and -1 + scale reduces the
+      #   # rng_ to 0 when scale = 0, but rng_ = range when scale = 1.
+      #   rng_ = (range ** scale) - 1 + scale
+      #   pct  = (number - zero) / range
+      #   [zero + rng_ * pct, scale, true]
+      # end
+
+      # No scaling
       lambda do |scale|
-        # Shrink range exponentially, and -1 + scale reduces the
-        # rng_ to 0 when scale = 0, but rng_ = range when scale = 1.
-        rng_ = (range ** scale) - 1 + scale
-        pct  = (number - zero) / range
-        [zero + rng_ * pct, scale, true]
+        [number, scale, true]
       end
     end
 
@@ -92,3 +98,21 @@ module Propr
 
   end
 end
+
+# Instances of Monad Random
+require "propr/random/array"
+require "propr/random/bigdecimal"
+require "propr/random/boolean"
+require "propr/random/complex"
+require "propr/random/date"
+require "propr/random/float"
+require "propr/random/hash"
+require "propr/random/integer"
+require "propr/random/maybe"
+require "propr/random/nil"
+require "propr/random/range"
+require "propr/random/rational"
+require "propr/random/set"
+require "propr/random/string"
+require "propr/random/symbol"
+require "propr/random/time"

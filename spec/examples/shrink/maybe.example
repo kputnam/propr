@@ -1,14 +1,14 @@
 require "spec_helper"
 
-describe Propr::Maybe, "#shrink" do
+describe Fr::Maybe, "#shrink" do
 
-  property("emtpty") { Propr::None.shrink.empty? }
+  property("emtpty") { Fr.none.shrink.empty? }
     .check
 
   property("has some") do |o|
     os = true.maybe(o).shrink
     so = true.maybe(o.shrink)
-    os - [Propr::None] == [so]
+    os - [Fr.none] == [so]
   end
   .check { Integer.random }
   .check { String.random }
@@ -16,7 +16,7 @@ describe Propr::Maybe, "#shrink" do
   property("has none") do |o|
     os = true.maybe(o).shrink
     so = true.maybe(o.shrink)
-    os - [so] == [Propr::None]
+    os - [so] == [Fr.none]
   end
   .check { Integer.random }
   .check { String.random }

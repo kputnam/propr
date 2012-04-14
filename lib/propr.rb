@@ -5,10 +5,8 @@ module Propr
   autoload :RSpec,        "propr/rspec"
   autoload :RSpecAdapter, "propr/rspec"
 
-  # Monkey patches
-  require "propr/unfold"
-  require "propr/monad"
-  require "propr/instances"
+  require "fr"
+  require "propr/random"
 
   class GuardFailure < StandardError
   end

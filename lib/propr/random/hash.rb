@@ -31,8 +31,9 @@ class << Hash
   #   end
   #
   def random(options = {}, m = Propr::Random)
-    min = options[:min] || 0
-    max = options[:max] || 10
+    min  = options[:min] || 0
+    max  = options[:max] || 10
+    pair = yield
 
     # @todo: Be sure we created enough *unique* keys
     #
@@ -42,7 +43,7 @@ class << Hash
     #   end
     #
     m.bind(Integer.random(options.merge(min: min, max: max))) do |size|
-      m.bind(m.sequence(size.times.map { yield })) do |pairs|
+      m.bind(m.sequence([pair]*size)) do |pairs|
         m.unit(Hash[pairs])
       end
     end
