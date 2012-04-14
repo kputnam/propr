@@ -5,10 +5,10 @@ describe BigDecimal, "#shrink" do
   property("self"){|n| not n.shrink.member?(n) }
     .check{ BigDecimal.random }
 
-  property("smaller"){|n| guard n < 0; n.shrink.all?{|m| m > n }}
+  property("smaller"){|n| n.shrink.all?{|m| m > n }}
     .check{ BigDecimal.random(max: -1) }
 
-  property("smaller"){|n| guard n > 0; n.shrink.all?{|m| m < n }}
+  property("smaller"){|n| n.shrink.all?{|m| m < n }}
     .check{ BigDecimal.random(min: 1) }
 
   property("smallest"){|n| n.shrink.empty? }
