@@ -57,13 +57,15 @@ module Propr
     end
 
     # When given two arguments, scales a numeric value around a
-    # given origin `ref`, using the current scale factor (0..1).
+    # given origin `zero`, using the current scale factor (0..1).
     #
-    def scale(number, range, ref)
+    def scale(number, range, zero)
       lambda do |scale|
-        pct  = (number - ref) / range
+        # Shrink range exponentially, and -1 + scale reduces the
+        # rng_ to 0 when scale = 0, but rng_ = range when scale = 1.
         rng_ = (range ** scale) - 1 + scale
-        [ref + rng_* pct, scale, true]
+        pct  = (number - zero) / range
+        [zero + rng_ * pct, scale, true]
       end
     end
 
