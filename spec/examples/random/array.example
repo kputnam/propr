@@ -4,10 +4,10 @@ describe Array, ".random" do
 
   describe "min and max" do
     property("bounded"){|a,b| guard a <= b; m.eval(Array.random(min: a, max: b) { m.unit nil }).length >= a }
-      .check{ sequence [Integer.random(min: -50, max: 10), Integer.random(min: 0, max: 50)] }
+      .check{ sequence [Integer.random(min: 0, max: 10), Integer.random(min: 10, max: 50)] }
 
     property("bounded"){|a,b| guard a <= b; m.eval(Array.random(min: a, max: b) { m.unit nil }).length <= b }
-      .check{ sequence [Integer.random(min: -50, max: 10), Integer.random(min: 0, max: 50)] }
+      .check{ sequence [Integer.random(min: 0, max: 10), Integer.random(min: 10, max: 50)] }
 
     # @todo: only run once
     property("empty"){|xs| xs.empty? }
@@ -19,13 +19,13 @@ describe Array, ".random" do
   end
 
   describe "items" do
-    property("sequence"){|xs| xs.uniq.length == xs.length }
+    property("sequence"){|xs| xs.uniq.length <= 1 }
       .check{ x = 0; Array.random { unit(x += 1) }}
 
-    property("sequence"){|xs| guard(!xs.empty?); xs.first == 1 }
+    property("sequence"){|xs| xs.empty? or xs.first == 1 }
       .check{ x = 0; Array.random { unit(x += 1) }}
 
-    property("sequence"){|xs| xs.empty? or xs.last == xs.length }
+    property("sequence"){|xs| xs.empty? or xs.last == 1 }
       .check{ x = 0; Array.random { unit(x += 1) }}
 
     property("repeat"){|xs| xs.uniq.length <= 1 }

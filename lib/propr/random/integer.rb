@@ -20,7 +20,7 @@ class << Integer
     raise ArgumentError,
       "min > max" if min > max
 
-    range  = max - min + 1
+    range  = max - min
     center = options.fetch(:center, :mid)
     center =
       case center
