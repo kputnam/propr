@@ -8,10 +8,12 @@ module Propr
       # Run each property 100 times, allow 50 retries, and
       # start the scale at 0, grow suddenly towards the end
       @runner = Runner.new(100, 50,
+      # lambda{|p,s,t,_| (p+s <= t ? p+s : t) / t })
         lambda{|p,s,t,_| (BigDecimal(p+s <= t ? p+s : t) / t) })
     end
 
     def check(*args, &generator)
+      m        = self
       runner   = @runner
       property = @property
 
@@ -24,7 +26,7 @@ module Propr
             if skipped >= runner.maxskip
               raise NoMoreTries.new(runner.maxskip)
             else
-              raise Falsifiable.new(counterex, passed, skipped)
+              raise Falsifiable.new(m.shrink(counterex), passed, skipped)
             end
           end
         end
@@ -34,8 +36,33 @@ module Propr
         end
       end
 
-      # Return `self` so users can chain calls to `check`
+      # Return `self` to allow chaining calls to `check`
       self
+    end
+
+    def shrink(counterex)
+      #uts "shrink: #{counterex.inspect}"
+
+      xs = [Array(counterex)]
+
+      while true
+        # Generate simpler counter-examples
+        ys = Array.bind(xs) do |args|
+          head, *tail = args.map(&:shrink)
+          head.product(*tail)
+        end.reject{|args| args.empty? or @property.call(*args) }
+
+        if ys.empty?
+          return xs.first
+        end
+
+        # Prune randomly to maximum size
+        if ys.size <= 10
+          xs = ys
+        else
+          xs = 10.times.map { ys.delete_at(rand(ys.length)) }
+        end
+      end
     end
 
   private
