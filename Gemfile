@@ -1,5 +1,7 @@
 source "http://rubygems.org"
 
+gem "fr",           "~> 0.9.1"
+
 group :development do
   gem "rake",       "~> 0.9.2"
   gem "rcov",       "~> 0.9.9"
