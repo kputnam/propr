@@ -61,22 +61,20 @@ module Propr
     # given origin `zero`, using the current scale factor (0..1).
     #
     def scale(number, range, zero)
-      lambda do |scale|
-        if range.zero?
+      if range.zero?
+        # No scaling
+        lambda do |scale|
           [number, scale, true]
-        else
-          # Shrink range exponentially, and -1 + scale reduces the
-          # rng_ to 0 when scale = 0, but rng_ = range when scale = 1.
+        end
+      else
+        # Shrink range exponentially, and -1 + scale reduces the
+        # rng_ to 0 when scale = 0, but rng_ = range when scale = 1.
+        lambda do |scale|
           rng_ = (range ** scale) - 1 + scale
           pct  = (number - zero) / range
           [zero + rng_ * pct, scale, true]
         end
       end
-
-      # No scaling
-      # lambda do |scale|
-      #   [number, scale, true]
-      # end
     end
 
     # Generate psuedo-random number normally distributed between
