@@ -25,13 +25,13 @@ then generalizing the test for any input.
 
 ```ruby
 describe Array do
-  include Propr::Rspec
+  include Propr::RSpec
 
   describe "#+" do
     # Traditional unit test
     it "sums lengths" do
       xs = [100, 200, 300]
-      ys = [500, 200]
+      ys = [400, 500]
       (xs + ys).length.should == xs.length + ys.length
     end
 
@@ -43,25 +43,24 @@ describe Array do
 end
 ```
 
-The following example is similar, but contains an error that might not
-be revealed by hand-written test cases.
+The following example is similar, but contains an error in specification
 
 ```ruby
 describe Array do
-  include Propr::Rspec
+  include Propr::RSpec
 
   describe "#|" do
     # Traditional unit test
     it "sums lengths" do
       xs = [100, 200, 300]
-      ys = [500, 200]
+      ys = [400, 500]
       (xs | ys).length.should == xs.length + ys.length
     end
 
     # Property-based test
     property("sums lengths"){|xs, ys| (xs | ys).length == xs.length + ys.length }
-      .check([100, 200, 300], [500, 200])
-      .check{ sequence [Array.random { Integer.random }, Array.random { Integer.random }] }
+      .check([100, 200, 300], [400, 500])
+      .check{ sequence [Array.random{Integer.random(min:0, max:50)}]*2 }
   end
 end
 ```
@@ -69,31 +68,67 @@ end
 When this specification is executed, the following error is reported.
 
     $ rake spec
-    .F
+    ..F
 
     Failures:
 
-      1) Array#| with two arrays x and y has length equal to x.length + y.length
+      1) Array#| sums lengths
+         Failure/Error: raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
          Propr::Falsifiable:
-           input: [[224, -11, 62], [84, 241, -11]]
-           after: 307 passed, 0 skipped
+           input:    [[25, 24], [24, 27]]
+           shrunken: [[], [0, 0]]
+           after: 49 passed, 0 skipped
+         # ./lib/propr/rspec.rb:29:in `block in check'
 
-    Finished in 0.02185 seconds
-    2 examples, 1 failure
+    Finished in 0.22829 seconds
+    3 examples, 1 failure
 
 You may have figured out the error is that `|` removes duplicate elements
 from the result. We might not have caught the mistake by writing individual
-test cases. The output indicates Propr generated 25 sets of input before
+test cases. The output indicates Propr generated 49 sets of input before
 finding one that failed.
 
 Now that a failing test case has been identified, you might write another
-`check` with those specific inputs to prevent regressions. You could also
-call `srand 317419430220052582439642446331757152805` like this to regenerate
-the same inputs for the entire test suite:
+`check` with those specific inputs to prevent regressions.
 
+You could also print the initial random seed like this and when a test fails,
+explicitly set the random seed to regenerate the same inputs for the entire
+test suite:
+
+    $ cat spec/spec_helper.rb
     RSpec.configure do |config|
-      srand 317419430220052582439642446331757152805
+      srand.tap{|seed| puts "Random seed is #{seed}"; srand seed }
     end
+
+    $ rake spec
+    Run with srand 146211424375622429406889408197139382303
+    ..F
+
+    Failures:
+
+      1) Array#| sums lengths
+         Failure/Error: raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
+         Propr::Falsifiable:
+           input:    [[25, 24], [24, 27]]
+           shrunken: [[], [0, 0]]
+           after: 49 passed, 0 skipped
+
+    Finished in 0.22829 seconds
+    3 examples, 1 failure
+
+Now change spec\_helper.rb to explicitly set the random seed:
+
+    $ cat spec/spec_helper.rb
+    RSpec.configure do |config|
+      srand 146211424375622429406889408197139382303
+      srand.tap{|seed| puts "Random seed is #{seed}"; srand seed }
+    end
+
+    $ rake spec
+    Run with srand 146211424375622429406889408197139382303
+
+The remaining output should be identical every time you run the suite, so
+long as specs are in the same order each time.
 
 ### Just Plain Functions
 
@@ -451,23 +486,35 @@ search for a simpler counterexample. This is done by iteratively calling
 `#shrink` on each successively smaller counterexample.
 
     $ cat shrink.example
-    require "spec_helper"
+    require "rspec"
+    require "propr"
+
+    RSpec.configure do |config|
+      include Propr::RSpec
+
+      srand 146211424375622429406889408197139382303
+      srand.tap{|seed| puts "Run with srand #{seed}"; srand seed }
+    end
 
     describe Float do
       property("assoc"){|x,y,z| (x + y) + z == x + (y + z) }
-       .check(-382863.98514407175, 224121.21177705095, 276118.77134001954)
+        .check(-382863.98514407175, 224121.21177705095, 276118.77134001954)
     end
 
     $ rspec shrink.example
+    Run with srand 146211424375622429406889408197139382303
     F
 
     Failures:
 
-      1) Propr::Random#scale shrink
+      1) Float assoc
          Propr::Falsifiable:
-           input: [-0.2886402084071274, 0.21834104334780227, 2.323281102654298e-05]
-           after: 2 passed, 0 skipped
+           input:    [-382863.98514407175, 224121.21177705095, 276118.77134001954]
+           shrunken: [-0.007740960460133677, 0.011895728563551701, 3.9765678826328424e-05]
+           after: 0 passed, 0 skipped
+         # ./lib/propr/rspec.rb:36:in `block in check'
 
+    Finished in 10.52 seconds
     1 example, 1 failure
 
 Notice the output shows a "simpler" counterexample than the inputs we explicitly
