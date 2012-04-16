@@ -12,15 +12,16 @@ module Propr
   end
 
   class Falsifiable < StandardError
-    attr_reader :counterex, :passed, :skipped
+    attr_reader :counterex, :shrunken, :passed, :skipped
 
-    def initialize(counterex, passed, skipped)
-      @counterex, @passed, @skipped =
-        counterex, passed, skipped
+    def initialize(counterex, shrunken, passed, skipped)
+      @counterex, @shrunken, @passed, @skipped =
+        counterex, shrunken, passed, skipped
     end
 
     def to_s
-      "input: #{@counterex.inspect}\n" +
+      "input:    #{@counterex.inspect}\n" +
+      "shrunken: #{@shrunken.inspect}\n" +
       "after: #{@passed} passed, #{@skipped} skipped\n"
     end
   end
