@@ -26,13 +26,15 @@ module Propr
             if skipped >= runner.maxskip
               raise NoMoreTries.new(runner.maxskip)
             else
-              raise Falsifiable.new(m.shrink(counterex), passed, skipped)
+              raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
             end
           end
         end
       else
         @group.example(@property.name, @options) do #.merge(caller: location)) do
-          property.call(*args)
+          unless property.call(*args)
+            raise Falsifiable.new(args, m.shrink(args), 0, 0)
+          end
         end
       end
 
@@ -41,8 +43,6 @@ module Propr
     end
 
     def shrink(counterex)
-      #uts "shrink: #{counterex.inspect}"
-
       xs = [Array(counterex)]
 
       while true
