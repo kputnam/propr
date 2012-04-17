@@ -1,35 +1,23 @@
 module Propr
-  class Property #< Proc
+  class Property
+    # @return [Proc]
+    def self.new(name, body)
+      body.instance_variable_set(:@name, name)
 
-    # @return [String]
-    attr_reader :name
+      # @return [String]
+      body.define_singleton_method(:name) { @name }
 
-    def initialize(name, body)
-      @name, @body =
-        name, body
-    end
-
-    # @return [Boolean]
-    def check(*args)
-      if block_given?
-        count = args.first || 100
-        count.times.all? { true == @body.call(*yield) }
-      else
-        true == @body.call(*args)
+      # @return [Boolean]
+      body.define_singleton_method(:check) do |*args, &block|
+        if block.nil?
+          true == call(*args)
+        else
+          count = args.first || 100
+          count.times.all? { true == call(*block.call) }
+        end
       end
-    end
 
-    def arity
-      @body.arity
+      body
     end
-
-    def call(*args, &block)
-      @body.call(*args)
-    end
-
-    def [](*args, &block)
-      @body.call(*args)
-    end
-
   end
 end
