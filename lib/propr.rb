@@ -20,9 +20,14 @@ module Propr
     end
 
     def to_s
-      "input:    #{@counterex.inspect}\n" +
-      "shrunken: #{@shrunken.inspect}\n" +
-      "after: #{@passed} passed, #{@skipped} skipped\n"
+      if @shrunken.nil?
+        "input: #{@counterex.map(&:inspect).join(", ")}\n" +
+        "after: #{@passed} passed, #{@skipped} skipped\n"
+      else
+        "input:    #{@counterex.map(&:inspect).join(", ")}\n" +
+        "shrunken: #{@shrunken.map(&:inspect).join(", ")}\n" +
+        "after: #{@passed} passed, #{@skipped} skipped\n"
+      end
     end
   end
 
