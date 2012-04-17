@@ -13,21 +13,26 @@ module Propr
       wrapped = Dsl::Check.wrap(generator)
 
       until passed >= @minpass or skipped >= @maxskip
-        value, _, success =
+        input, _, success =
           Random.run(wrapped, @scale.call(passed, skipped, @minpass, @maxskip))
 
         if success
           begin
-            if property.check(value)
+            result = property.arity == 1 ?
+              property.call(input) : property.call(*input)
+
+            if result
               passed += 1
             else
               # Falsifiable
               return [false, passed, skipped, value]
             end
           rescue GuardFailure => e
+            # GuardFailure in property
             skipped += 1
           end
         else
+          # GuardFailure in generator
           skipped += 1
         end
       end

@@ -47,7 +47,11 @@ module Propr
     end
 
     def shrink(counterex)
-      xs = [Array(counterex)]
+      if @property.arity.zero?
+        return []
+      end
+
+      xs = [counterex]
 
       while true
         # Generate simpler examples
