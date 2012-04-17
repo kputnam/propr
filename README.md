@@ -75,8 +75,8 @@ When this specification is executed, the following error is reported.
       1) Array#| sums lengths
          Failure/Error: raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
          Propr::Falsifiable:
-           input:    [[25, 24], [24, 27]]
-           shrunken: [[], [0, 0]]
+           input:    [25, 24], [24, 27]
+           shrunken: [], [0, 0]
            after: 49 passed, 0 skipped
          # ./lib/propr/rspec.rb:29:in `block in check'
 
@@ -109,8 +109,8 @@ test suite:
       1) Array#| sums lengths
          Failure/Error: raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
          Propr::Falsifiable:
-           input:    [[25, 24], [24, 27]]
-           shrunken: [[], [0, 0]]
+           input:    [25, 24], [24, 27]
+           shrunken: [], [0, 0]
            after: 49 passed, 0 skipped
 
     Finished in 0.22829 seconds
@@ -509,8 +509,8 @@ search for a simpler counterexample. This is done by iteratively calling
 
       1) Float assoc
          Propr::Falsifiable:
-           input:    [-382863.98514407175, 224121.21177705095, 276118.77134001954]
-           shrunken: [-0.007740960460133677, 0.011895728563551701, 3.9765678826328424e-05]
+           input:    -382863.98514407175, 224121.21177705095, 276118.77134001954
+           shrunken: -0.007740960460133677, 0.011895728563551701, 3.9765678826328424e-05
            after: 0 passed, 0 skipped
          # ./lib/propr/rspec.rb:36:in `block in check'
 
