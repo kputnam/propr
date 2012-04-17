@@ -13,7 +13,6 @@ describe BigDecimal, "#shrink" do
 
   property("smallest"){|n| n.shrink.empty? }
     .check(BigDecimal(0))
-    .check(BigDecimal(-1))
 
   property("contains smallest"){|n| guard n != 0, n != -1; n.shrink.member?(0) }
     .check{ BigDecimal.random }
