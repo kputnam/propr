@@ -18,22 +18,26 @@ module Propr
       property = @property
 
       if block_given?
-        @group.example(@property.name, @options) do #.merge(caller: location)) do
+        location = location(generator)
+
+        @group.example(@property.name, @options.merge(caller: location)) do
           success, passed, skipped, counterex =
             runner.run(property, generator)
 
           unless success
             if skipped >= runner.maxskip
-              raise NoMoreTries.new(runner.maxskip)
+              raise NoMoreTries.new(runner.maxskip), nil, location
             else
-              raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped)
+              raise Falsifiable.new(counterex, m.shrink(counterex), passed, skipped), nil, location
             end
           end
         end
       else
-        @group.example(@property.name, @options) do #.merge(caller: location)) do
+        location = location(caller)
+
+        @group.example(@property.name, @options.merge(caller: location)) do
           unless property.call(*args)
-            raise Falsifiable.new(args, m.shrink(args), 0, 0)
+            raise Falsifiable.new(args, m.shrink(args), 0, 0), nil, location
           end
         end
       end
@@ -67,15 +71,10 @@ module Propr
 
   private
 
-    def error(message, location)
-      raise ::RSpec::Expectations::ExpectationNotMetError,
-        message, location
-    end
-
     def location(data)
       case data
       when Proc
-        ["#{data.source_location.join(":")}:0"]
+        ["#{data.source_location.join(":")}"]
       when Array
         [data.first]
       end
