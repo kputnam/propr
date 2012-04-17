@@ -50,21 +50,29 @@ module Propr
       xs = [Array(counterex)]
 
       while true
-        # Generate simpler counter-examples
+        # Generate simpler examples
         ys = Array.bind(xs) do |args|
           head, *tail = args.map(&:shrink)
           head.product(*tail)
-        end.reject{|args| args.empty? or @property.call(*args) }
-
-        if ys.empty?
-          return xs.first
         end
 
-        # Prune randomly to maximum size
-        if ys.size <= 10
-          xs = ys
+        zs = []
+
+        # Collect counter examples
+        until ys.empty? or zs.length >= 10
+          args = ys.delete_at(rand(ys.size))
+
+          unless @property.call(*args)
+            zs.push(args)
+          end
+        end
+
+        if zs.empty?
+          # No simpler counter examples
+          return xs.first
         else
-          xs = 10.times.map { ys.delete_at(rand(ys.length)) }
+          # Try to further simplify these
+          xs = zs
         end
       end
     end
