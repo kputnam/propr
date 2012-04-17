@@ -101,7 +101,7 @@ test suite:
     end
 
     $ rake spec
-    Run with srand 146211424375622429406889408197139382303
+    Random seed is 146211424375622429406889408197139382303
     ..F
 
     Failures:
@@ -125,7 +125,7 @@ Now change spec\_helper.rb to explicitly set the random seed:
     end
 
     $ rake spec
-    Run with srand 146211424375622429406889408197139382303
+    Random seed is 146211424375622429406889408197139382303
 
 The remaining output should be identical every time you run the suite, so
 long as specs are in the same order each time.
@@ -493,7 +493,7 @@ search for a simpler counterexample. This is done by iteratively calling
       include Propr::RSpec
 
       srand 146211424375622429406889408197139382303
-      srand.tap{|seed| puts "Run with srand #{seed}"; srand seed }
+      srand.tap{|seed| puts "Random seed is #{seed}"; srand seed }
     end
 
     describe Float do
@@ -502,7 +502,7 @@ search for a simpler counterexample. This is done by iteratively calling
     end
 
     $ rspec shrink.example
-    Run with srand 146211424375622429406889408197139382303
+    Random seed is 146211424375622429406889408197139382303
     F
 
     Failures:
