@@ -81,6 +81,10 @@ module Propr
     # 0 <= x < 1. This distribution is not weighted using `scale`.
     #
     def rand(limit = nil)
+      if not limit.nil? and limit <= 0
+        raise InvalidArgument, "limit <= 0"
+      end
+
       lambda do |scale|
         [Kernel.rand(limit), scale, true]
       end

@@ -13,7 +13,7 @@ describe Propr, "guard" do
     true
   end.check
 
-  property("callable from check") do
+  property("callable from check") do |x|
     true
   end.check { guard(true) }
 
