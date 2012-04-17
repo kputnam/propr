@@ -1,0 +1,16 @@
+require "rspec"
+require "propr"
+
+RSpec.configure do |config|
+  include Propr::RSpec
+
+  srand 146211424375622429406889408197139382303
+  srand.tap{|seed| puts "Random seed is #{seed}"; srand seed }
+end
+
+describe Float do
+  p = property("assoc"){|x,y,z| (x + y) + z == x + (y + z) }
+  p.check(-382863.98514407175, 224121.21177705095, 276118.77134001954)
+  p.check(-382863.98514407175, 224121.21177705095, 276118.77134001954)
+# p.check{ sequence [Float.random]*3 }
+end
