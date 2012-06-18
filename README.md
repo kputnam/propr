@@ -18,6 +18,16 @@ run with any valid inputs, the inputs and the program output are related by
 `f(input, output)`". The test framework produces random (valid) inputs,
 searching for a counterexample.
 
+## Installation
+
+There are a few things I'd like to fix before publishing this as a gem. Until
+then, you can install directly from the git repo using Bundler, with this in
+your Gemfile:
+
+    gem "propr", git: "git@github.com:kputnam/propr.git", branch: "rewrite"
+
+You'll probably want to specify the current tag, also (eg, `..., tag: "v0.1.0"`)
+
 ## Properties
 
 The following example demonstrates testing a property with a specific input,
