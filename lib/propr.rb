@@ -21,11 +21,11 @@ module Propr
 
     def to_s
       if @shrunken.nil?
-        ["input: #{@counterex.map(&:inspect).join(", ")}",
+        ["input: #{Array(@counterex).map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       else
-        ["input:    #{@counterex.map(&:inspect).join(", ")}",
-         "shrunken: #{@shrunken.map(&:inspect).join(", ")}",
+        ["input:    #{Array(@counterex).map(&:inspect).join(", ")}",
+         "shrunken: #{Array(@shrunken).map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       end
     end
@@ -50,12 +50,12 @@ module Propr
     def to_s
       if @shrunken.nil?
         [@exception.message,
-         "input: #{@counterex.map(&:inspect).join(", ")}",
+         "input: #{Array(@counterex).map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       else
         [@exception.message,
-         "input:    #{@counterex.map(&:inspect).join(", ")}",
-         "shrunken: #{@shrunken.map(&:inspect).join(", ")}",
+         "input:    #{Array(@counterex).map(&:inspect).join(", ")}",
+         "shrunken: #{Array(@shrunken).map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       end
     end
