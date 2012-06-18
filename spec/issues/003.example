@@ -1,0 +1,6 @@
+require "spec_helper"
+
+describe Propr, "issue #3" do
+  property("exceptional"){|x,y| if x < 10 then true else raise "No!" end }
+    .check{ sequence [Integer.random, String.random] }
+end

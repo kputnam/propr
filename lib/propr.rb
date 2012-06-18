@@ -21,14 +21,46 @@ module Propr
 
     def to_s
       if @shrunken.nil?
-        "input: #{@counterex.map(&:inspect).join(", ")}\n" +
-        "after: #{@passed} passed, #{@skipped} skipped\n"
+        ["input: #{@counterex.map(&:inspect).join(", ")}",
+         "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       else
-        "input:    #{@counterex.map(&:inspect).join(", ")}\n" +
-        "shrunken: #{@shrunken.map(&:inspect).join(", ")}\n" +
-        "after: #{@passed} passed, #{@skipped} skipped\n"
+        ["input:    #{@counterex.map(&:inspect).join(", ")}",
+         "shrunken: #{@shrunken.map(&:inspect).join(", ")}",
+         "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       end
     end
+  end
+
+  class Failure < StandardError
+    attr_reader :counterex, :shrunken, :passed, :skipped
+
+    def initialize(exception, counterex, shrunken, passed, skipped)
+      @exception, @counterex, @shrunken, @passed, @skipped =
+        exception, counterex, shrunken, passed, skipped
+    end
+
+    def class
+      @exception.class
+    end
+
+    def backtrace
+      @exception.backtrace
+    end
+
+    def to_s
+      if @shrunken.nil?
+        [@exception.message,
+         "input: #{@counterex.map(&:inspect).join(", ")}",
+         "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
+      else
+        [@exception.message,
+         "input:    #{@counterex.map(&:inspect).join(", ")}",
+         "shrunken: #{@shrunken.map(&:inspect).join(", ")}",
+         "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
+      end
+    end
+
+    alias_method :message, :to_s
   end
 
   class NoMoreTries < StandardError

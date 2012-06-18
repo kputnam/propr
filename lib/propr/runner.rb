@@ -30,6 +30,8 @@ module Propr
           rescue GuardFailure => e
             # GuardFailure in property
             skipped += 1
+          rescue
+            raise Failure.new($!, input, nil, passed, skipped)#, nil, location
           end
         else
           # GuardFailure in generator
