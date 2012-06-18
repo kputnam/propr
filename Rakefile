@@ -16,6 +16,7 @@ end
 
 begin
   require "rspec/core/rake_task"
+
   RSpec::Core::RakeTask.new do |t|
     t.verbose = false
     t.pattern = "#{relpath}/spec/examples/**/*.example"
