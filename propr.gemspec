@@ -8,12 +8,13 @@ Gem::Specification.new do |s|
   s.author  = "Kyle Putnam"
   s.email   = "putnam.kyle@gmail.com"
 
-  s.files             = Dir["*.md", "Rakefile",
-                            "bin/*",
-                            "lib/**/*",
-                            "doc/**/*.md",
-                            "spec/**/*"]
-  s.test_files        = Dir["spec/examples/**/*.example"]
-  s.has_rdoc          = false
-  s.require_path      = "lib"
+  s.add_dependency "fr", ">= 0.9.1"
+  s.files          = Dir["*.md", "Rakefile",
+                         "bin/*",
+                         "lib/**/*",
+                         "doc/**/*.md",
+                         "spec/**/*"]
+  s.test_files     = Dir["spec/examples/**/*.example"]
+  s.has_rdoc       = false
+  s.require_path   = "lib"
 end
