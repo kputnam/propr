@@ -8,6 +8,16 @@ module Propr
   require "fr"
   require "propr/random"
 
+  def self.wrap(object)
+    if object.nil?
+      []
+    elsif object.respond_to?(:to_ary)
+      object.to_ary || [object]
+    else
+      [object]
+    end
+  end
+
   class GuardFailure < StandardError
   end
 
@@ -19,13 +29,21 @@ module Propr
         counterex, shrunken, passed, skipped
     end
 
+    def counterex
+      Propr.wrap(@counterex)
+    end
+
+    def shrunken
+      Propr.wrap(@shrunken)
+    end
+
     def to_s
       if @shrunken.nil?
-        ["input: #{Array(@counterex).map(&:inspect).join(", ")}",
+        ["input: #{counterex.map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       else
-        ["input:    #{Array(@counterex).map(&:inspect).join(", ")}",
-         "shrunken: #{Array(@shrunken).map(&:inspect).join(", ")}",
+        ["input:    #{counterex.map(&:inspect).join(", ")}",
+         "shrunken: #{shrunken.map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       end
     end
@@ -39,6 +57,14 @@ module Propr
         exception, counterex, shrunken, passed, skipped
     end
 
+    def counterex
+      Propr.wrap(@counterex)
+    end
+
+    def shrunken
+      Propr.wrap(@shrunken)
+    end
+
     def class
       @exception.class
     end
@@ -50,12 +76,12 @@ module Propr
     def to_s
       if @shrunken.nil?
         [@exception.message,
-         "input: #{Array(@counterex).map(&:inspect).join(", ")}",
+         "input: #{counterex.map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       else
         [@exception.message,
-         "input:    #{Array(@counterex).map(&:inspect).join(", ")}",
-         "shrunken: #{Array(@shrunken).map(&:inspect).join(", ")}",
+         "input:    #{counterex.map(&:inspect).join(", ")}",
+         "shrunken: #{shrunken.map(&:inspect).join(", ")}",
          "after: #{@passed} passed, #{@skipped} skipped"].join("\n")
       end
     end
