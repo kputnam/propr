@@ -1,15 +1,6 @@
 class Integer
   MAX = 2 ** (0.size * 8 - 2) - 1
   MIN = -MAX + 1
-
-  # @return [Enumerator<Integer>]
-  def shrink
-    Array.unfold(self) do |seed|
-      zero  = 0
-      seed_ = zero + (seed - zero) / 2
-      (seed != seed_).maybe([zero + self - seed, seed_])
-    end
-  end
 end
 
 class << Integer

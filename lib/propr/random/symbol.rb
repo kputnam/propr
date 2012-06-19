@@ -1,9 +1,3 @@
-class Symbol
-  def shrink
-    to_s.shrink.map(&:to_sym)
-  end
-end
-
 class << Symbol
   # @note: Beware of memory consumption. Symbols are never garbage
   # collected, and we're generating them at random!

@@ -1,7 +1,4 @@
 class NilClass
-  def shrink
-    []
-  end
 end
 
 class << NilClass
