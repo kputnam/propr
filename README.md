@@ -286,7 +286,7 @@ Options
 
 ### Numbers
 
-#### Integer
+#### Integer.random
 
     >> m.eval Integer.random(min: -500, max: 500)
     => -382
@@ -297,7 +297,7 @@ Options
 * `max:` maximum value, defaults to Integer::MAX
 * `center:` defaults to the midpoint between min and max.
 
-#### Float
+#### Float.random
 
     >> m.eval Float.random(min: -500, max: 500)
     => 48.252030464134364
@@ -308,7 +308,7 @@ Options
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max.
 
-#### Rational
+#### Rational.random
 
     >> m.eval m.bind(m.sequence [Integer.random]*2){|a,b| unit Rational(a,b) }
     => (300421843/443649464)
@@ -316,7 +316,7 @@ Options
 Not implemented, as there isn't a nice way to ensure a `min` works. Instead,
 generate two numeric values and combine them:
 
-#### BigDecimal
+#### BigDecimal.random
 
     >> m.eval(BigDecimal.random(min: 10, max: 20)).to_s("F")
     => "14.934854011762374703280016489856414847259220844969789892"
@@ -327,7 +327,7 @@ Options
 * `max:` maximum value, defaults to Float::MAX
 * `center:` defaults to the midpoint between min and max
 
-#### Bignum
+#### Bignum.random
 
     >> m.eval Integer.random(min: Integer::MAX, max: Integer::MAX * 2)
     => 2015151263
@@ -336,7 +336,7 @@ There's no constructor specifically for Bignum. You can use `Integer.random`
 and specify `min: Integer::MAX + 1` and some even larger `max` value. Ruby
 will automatically handle Integer overflow by coercing to Bignum.
 
-#### Complex
+#### Complex.random
 
     >> m.eval(m.bind(m.sequence [Float.random(min:-10, max:10)]*2){|a,b| m.unit Complex(a,b) })
     => (9.806161068637833+7.523520738439842i)
@@ -350,7 +350,7 @@ The class method `random` returns a generator to construct a collection of
 elements, while the `#random` instance method returns a generator which returns
 an element from the collection.
 
-#### Array
+#### Array.random
 
 Expects a block parameter that yields a generator for elements.
 
@@ -363,7 +363,7 @@ Options
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
 
-#### Hash
+#### Hash.random
 
 Expects a block parameter that yields generator of [key, value] pairs.
 
@@ -376,7 +376,17 @@ Options
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
 
-#### Set
+#### Hash.random_vals
+
+Expects a hash whose keys are ordinary values, and whose values are
+generators.
+
+    >> m.eval Hash.random_vals(a: String.random, b: Integer.random)
+    => {:a=>"Fi?p`g", :b=>4551738453396095365} 
+
+Doesn't accept any options.
+
+#### Set.random
 
 Expects a block parameter that yields a generator for elements.
 
@@ -389,7 +399,7 @@ Options
 * `max:` maximum size, defaults to 10
 * `center:` defaults to the midpoint between min and max
 
-#### Range
+#### Range.random
 
 Expects __either__ a block parameter __or__ one or both of min and max.
 

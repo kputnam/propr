@@ -1,0 +1,18 @@
+require "spec_helper"
+
+describe Hash, ".random_vals" do
+
+  generators = [String, Integer, Float, Boolean, Time].map(&:random)
+
+  property("preserves hash keys"){|xs| xs.keys == m.eval(Hash.random_vals(xs)).keys }
+    .check(Hash[a: Integer.random, b: Propr::Random.unit(0)])
+    .check{ Hash.random { sequence [generators.random, unit(unit(0))] }}
+
+  property("evaluates hash values"){|xs| m.eval(Hash.random_vals(xs)).values.all?{|v| String === v }}
+    .check(Hash[a: String.random, b: String.random])
+  # .check{ Hash.random { sequence [Symbol.random, unit(String.random)] }}
+
+  property("evaluates hash values"){|xs| m.eval(Hash.random_vals(xs)).values.all?{|v| v == 0 }}
+    .check{ Hash.random { sequence [Symbol.random, unit(unit(0))] }}
+
+end
