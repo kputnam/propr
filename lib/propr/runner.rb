@@ -16,10 +16,17 @@ module Propr
         input, _, success =
           Random.run(wrapped, @scale.call(passed, skipped, @minpass, @maxskip))
 
+        # Generator should've returned an argument list. Except, for convenience,
+        # single-argument properties should have generators which return a single
+        # value, not an argument list, and we'll make it an argument list *here*.
+        input = property.arity == 1 ?
+          [input] : input
+
         if success
           begin
-            result = property.arity == 1 ?
-              property.call(input) : property.call(*input)
+            result = property.call(*input)
+            # result = property.arity == 1 ?
+            #   property.call(input) : property.call(*input)
 
             if result
               passed += 1
