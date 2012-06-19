@@ -46,6 +46,7 @@ module Propr
       self
     end
 
+    # TODO: this method is not RSpec specific
     def shrink(counterex)
       if @property.arity.zero?
         return []
@@ -56,7 +57,7 @@ module Propr
       while true
         # Generate simpler examples
         ys = Array.bind(xs) do |args|
-          head, *tail = args.map(&:shrink)
+          head, *tail = args.map{|x| x.respond_to?(:shrink) ? x.shrink : [x] }
           head.product(*tail)
         end
 
