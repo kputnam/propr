@@ -25,7 +25,7 @@ module Propr
               passed += 1
             else
               # Falsifiable
-              return [false, passed, skipped, value]
+              return [false, passed, skipped, input]
             end
           rescue GuardFailure => e
             # GuardFailure in property
