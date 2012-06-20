@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.summary     = "Property-based testing for Ruby (ala QuickCheck)"
   s.homepage    = "https://github.com/kputnam/propr"
 
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.date    = "2012-06-18"
   s.author  = "Kyle Putnam"
   s.email   = "putnam.kyle@gmail.com"
