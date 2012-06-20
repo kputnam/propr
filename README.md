@@ -26,7 +26,7 @@ your Gemfile:
 
     gem "propr", git: "git@github.com:kputnam/propr.git", branch: "rewrite"
 
-You'll probably want to specify the current tag, also (eg, `..., tag: "v0.1.0"`)
+You'll probably want to specify the current tag, also (eg, `..., tag: "v0.2.0"`)
 
 ## Properties
 
