@@ -1,6 +1,6 @@
 # Propr
 
-Property-based testing for Ruby (ala QuickCheck). [![Build Status](https://secure.travis-ci.org/kputnam/cantor.png)](http://travis-ci.org/kputnam/cantor)
+Property-based testing for Ruby (ala QuickCheck). [![Build Status](https://secure.travis-ci.org/kputnam/propr.png)](http://travis-ci.org/kputnam/propr)
 
 ## Introduction
 
