@@ -12,7 +12,7 @@ describe BigDecimal, "#shrink" do
     .check{ BigDecimal.random(min: 1) }
 
   property("smallest"){|n| n.shrink.empty? }
-    .check(BigDecimal(0))
+    .check(BigDecimal("0"))
 
   property("contains smallest"){|n| guard n != 0, n != -1; n.shrink.member?(0) }
     .check{ BigDecimal.random }
