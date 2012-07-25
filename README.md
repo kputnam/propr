@@ -1,3 +1,7 @@
+# Propr
+
+Property-based testing for Ruby (ala QuickCheck). [![Build Status](https://secure.travis-ci.org/kputnam/cantor.png)](http://travis-ci.org/kputnam/cantor)
+
 ## Introduction
 
 The usual approach to testing software is to describe a set of test inputs
@@ -431,7 +435,7 @@ The `#random` instance method is defined on the above types. It takes no paramet
     >> m.eval(Set.new([1,2,3,4]).random)
     => 4
     
-## Attenuation (limiting the search space for counter examples)
+## Search Space Attenuation
 
 The `m.eval` method has a second parameter that serves to exponentially reduce
 the domain for generators, specified with `min:` and `max:` parameters. The scale
