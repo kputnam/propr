@@ -110,7 +110,7 @@ module Propr
       m.send(:define_singleton_method, :included) do |scope|
 
         # @todo: raise an error if body isn't given
-        scope.send(:define_singleton_method, :property) do |name, options = {}, &body|
+        scope.send(:define_singleton_method, :property) do |name = "anonymous", options = {}, &body|
           q = Dsl::Property.wrap(body)
           p = Property.new(name, q)
           RSpecAdapter.new(self, options, p)
