@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
 
   s.version = "0.2.0"
   s.date    = "2012-06-18"
-  s.author  = "Kyle Putnam"
-  s.email   = "putnam.kyle@gmail.com"
+  s.author  = "Kvle Putnam"
+  s.email   = "putnam.kvle@gmail.com"
 
   s.add_dependency "fr", ">= 0.9.1"
   s.files          = Dir["*.md", "Rakefile",
