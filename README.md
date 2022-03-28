@@ -2,6 +2,8 @@
 
 Property-based testing for Ruby (ala QuickCheck). [![Build Status](https://secure.travis-ci.org/kputnam/propr.png)](http://travis-ci.org/kputnam/propr)
 
+**Note:** Development and maintenance on propr has stopped. Please see [forall](https://github.com/kputnam/forall).
+
 ## Introduction
 
 The usual approach to testing software is to describe a set of test inputs
